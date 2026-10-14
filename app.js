@@ -28,36 +28,27 @@ const DIAS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
 // horario fijo (no cambia)
 
 const HORARIO_FIJO = [
-  { hora: '7:00 - 7:40',  clases: {
+  { hora: '7:00 - 8:20',  clases: {
     Lunes:     { m: 'Castellano', p: 'Prof. Ingrid' },
     Martes:    { m: 'Matemática', p: 'Prof. Elizabeth' },
     Miércoles: { m: 'Educación Física', p: 'Prof. Daniel' },
     Jueves:    null,
     Viernes:   { m: 'G.H.C', p: 'Prof. Maruja' }
   }},
-  { hora: '7:40 - 8:20',  clases: {
-    Lunes: null, Martes: null, Miércoles: null, Jueves: null, Viernes: null
-  }},
-  { hora: '8:20 - 9:00',  clases: {
+  { hora: '8:20 - 9:40',  clases: {
     Lunes:     { m: 'Orientación', p: 'Prof. Bárbara' },
     Martes:    { m: 'Biología', p: 'Prof. Bárbara' },
     Miércoles: { m: 'G.H.C', p: 'Prof. Maruja' },
     Jueves:    { m: 'Orientación', p: 'Prof. Bárbara' },
     Viernes:   { m: 'Inglés', p: 'Prof. Ponfati' }
   }},
-  { hora: '9:00 - 9:40',  clases: {
-    Lunes: null, Martes: null, Miércoles: null, Jueves: null, Viernes: null
-  }},
   { receso: true, hora: '9:40 - 9:55' },
-  { hora: '9:55 - 10:35', clases: {
+  { hora: '9:55 - 11:15', clases: {
     Lunes:     null,
     Martes:    { m: 'Inglés', p: 'Prof. Rondlis' },
     Miércoles: { m: 'Matemática', p: 'Prof. Elizabeth' },
     Jueves:    { m: 'Educación Física', p: 'Prof. Daniel' },
     Viernes:   { m: 'Química', p: 'Prof. Andy' }
-  }},
-  { hora: '10:35 - 11:15', clases: {
-    Lunes: null, Martes: null, Miércoles: null, Jueves: null, Viernes: null
   }},
   { hora: '11:15 - 11:55', clases: {
     Lunes:     { m: 'Orientación', p: 'Prof. Bárbara' },
@@ -67,18 +58,14 @@ const HORARIO_FIJO = [
     Viernes:   { m: 'Biología', p: 'Prof. Bárbara' }
   }},
   { receso: true, hora: '11:55 - 12:10' },
-  { hora: '12:10 - 12:50', clases: {
+  { hora: '12:10 - 1:30', clases: {
     Lunes:     { m: 'Física', p: 'Prof. Elizabeth' },
     Martes:    null,
     Miércoles: null,
     Jueves:    { m: 'Física', p: 'Prof. Elizabeth' },
     Viernes:   { m: 'Castellano', p: 'Prof. Ingrid' }
-  }},
-  { hora: '12:50 - 1:30', clases: {
-    Lunes: null, Martes: null, Miércoles: null, Jueves: null, Viernes: null
   }}
 ];
-
 function cargarHorario() {
   const tbody = document.getElementById('cuerpo-horario');
   if (!tbody) return;

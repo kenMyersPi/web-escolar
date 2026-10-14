@@ -1,9 +1,38 @@
 // panel admin
 
+document.addEventListener('DOMContentLoaded', () => {
+  // tabs
+  document.querySelectorAll('.tabs button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.tab;
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('activa'));
+      document.getElementById(id).classList.add('activa');
+      document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('activo'));
+      btn.classList.add('activo');
+    });
+  });
+
+  // enter para login
+  document.getElementById('admin-pass').addEventListener('keydown', e => {
+    if (e.key === 'Enter') loginAdmin();
+  });
+
+  // sesion activa?
+  db.auth.getSession().then(({ data }) => {
+    if (data.session) {
+      document.getElementById('login-admin').style.display = 'none';
+      document.getElementById('panel-admin').style.display = 'block';
+      cargarTodo();
+    }
+  });
+});
+
 async function loginAdmin() {
   const email = document.getElementById('admin-email').value.trim();
   const pass = document.getElementById('admin-pass').value;
   const errorEl = document.getElementById('error-login');
+  const btn = document.getElementById('btn-login');
+
   errorEl.textContent = '';
 
   if (!email || !pass) {
@@ -11,7 +40,13 @@ async function loginAdmin() {
     return;
   }
 
+  btn.disabled = true;
+  btn.textContent = 'Entrando...';
+
   const { data, error } = await db.auth.signInWithPassword({ email, password: pass });
+
+  btn.disabled = false;
+  btn.textContent = 'Entrar';
 
   if (error) {
     errorEl.textContent = 'Correo o contraseña incorrectos';
@@ -29,26 +64,6 @@ async function cerrarSesion() {
   location.reload();
 }
 
-// sesion activa al abrir
-db.auth.getSession().then(({ data }) => {
-  if (data.session) {
-    document.getElementById('login-admin').style.display = 'none';
-    document.getElementById('panel-admin').style.display = 'block';
-    cargarTodo();
-  }
-});
-
-function mostrarTab(id, ev) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('activa'));
-  document.getElementById(id).classList.add('activa');
-
-  if (ev) {
-    document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('activo'));
-    ev.target.classList.add('activo');
-  }
-}
-
-// ---------- agregar ----------
 async function agregarHorario() {
   const dia = document.getElementById('h-dia').value.trim();
   const hora = document.getElementById('h-hora').value.trim();
@@ -125,50 +140,50 @@ async function agregarAnuncio() {
   cargarTodo();
 }
 
-// ---------- borrar ----------
 async function borrar(tabla, id) {
-  if (!confirm('¿Eliminar?')) return;
+  if (!confirm('¿Eliminar este registro?')) return;
   const { error } = await db.from(tabla).delete().eq('id', id);
   if (error) return alert('Error: ' + error.message);
   cargarTodo();
 }
 
-// ---------- render admin ----------
 async function cargarTodo() {
   const { data: h } = await db.from('cfar_horario').select('*').order('id');
   document.getElementById('admin-horario').innerHTML = (h || []).map(x =>
-    `<li>${x.materia} · ${x.dia} ${x.hora} <button onclick="borrar('cfar_horario', ${x.id})">Eliminar</button></li>`
+    `<li><span>${x.materia} · ${x.dia} ${x.hora}</span> <button onclick="borrar('cfar_horario', ${x.id})">Eliminar</button></li>`
   ).join('');
 
   const { data: p } = await db.from('cfar_profesores').select('*').order('id');
   document.getElementById('admin-profes').innerHTML = (p || []).map(x =>
-    `<li>${x.nombre} (${x.materia || '—'}) <button onclick="borrar('cfar_profesores', ${x.id})">Eliminar</button></li>`
+    `<li><span>${x.nombre} (${x.materia || '—'})</span> <button onclick="borrar('cfar_profesores', ${x.id})">Eliminar</button></li>`
   ).join('');
 
   const { data: e } = await db.from('cfar_estudiantes').select('*').order('nombre');
   document.getElementById('admin-estudiantes').innerHTML = (e || []).map(x =>
-    `<li>${x.nombre} · ${x.curso || '—'} <button onclick="borrar('cfar_estudiantes', ${x.id})">Eliminar</button></li>`
+    `<li><span>${x.nombre} · ${x.curso || '—'}</span> <button onclick="borrar('cfar_estudiantes', ${x.id})">Eliminar</button></li>`
   ).join('');
 
   const select = document.getElementById('n-estudiante');
-  select.innerHTML = (e || []).map(x => `<option value="${x.id}">${x.nombre}</option>`).join('');
+  select.innerHTML = (e || []).length
+    ? e.map(x => `<option value="${x.id}">${x.nombre}</option>`).join('')
+    : '<option value="">Sin estudiantes</option>';
 
   const { data: n } = await db
     .from('cfar_notas')
     .select('id, materia, nota, privada, cfar_estudiantes(nombre)')
     .order('id');
   document.getElementById('admin-notas').innerHTML = (n || []).map(x =>
-    `<li>${x.cfar_estudiantes?.nombre || '?'} · ${x.materia}: ${x.nota} ${x.privada ? '🔒' : ''} <button onclick="borrar('cfar_notas', ${x.id})">Eliminar</button></li>`
+    `<li><span>${x.cfar_estudiantes?.nombre || '?'} · ${x.materia}: ${x.nota} ${x.privada ? '🔒' : ''}</span> <button onclick="borrar('cfar_notas', ${x.id})">Eliminar</button></li>`
   ).join('');
 
   const { data: ev } = await db.from('cfar_evaluaciones').select('*').order('id');
   document.getElementById('admin-eval').innerHTML = (ev || []).map(x =>
-    `<li>${x.tipo}: ${x.titulo} <button onclick="borrar('cfar_evaluaciones', ${x.id})">Eliminar</button></li>`
+    `<li><span>${x.tipo}: ${x.titulo}</span> <button onclick="borrar('cfar_evaluaciones', ${x.id})">Eliminar</button></li>`
   ).join('');
 
   const { data: a } = await db.from('cfar_anuncios').select('*').order('id', { ascending: false });
   document.getElementById('admin-anuncios').innerHTML = (a || []).map(x =>
-    `<li>${x.titulo} <button onclick="borrar('cfar_anuncios', ${x.id})">Eliminar</button></li>`
+    `<li><span>${x.titulo}</span> <button onclick="borrar('cfar_anuncios', ${x.id})">Eliminar</button></li>`
   ).join('');
 }
 

@@ -1,53 +1,64 @@
 // vistas publicas
 
-function mostrarSeccion(id, ev) {
-  document.querySelectorAll('.seccion').forEach(s => s.classList.remove('activa'));
-  document.getElementById(id).classList.add('activa');
+document.addEventListener('DOMContentLoaded', () => {
+  // nav
+  document.querySelectorAll('.nav button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.seccion;
+      document.querySelectorAll('.seccion').forEach(s => s.classList.remove('activa'));
+      document.getElementById(id).classList.add('activa');
+      document.querySelectorAll('.nav button').forEach(b => b.classList.remove('activo'));
+      btn.classList.add('activo');
+    });
+  });
 
-  if (ev) {
-    document.querySelectorAll('.nav button').forEach(b => b.classList.remove('activo'));
-    ev.target.classList.add('activo');
-  }
-}
+  // carga inicial
+  cargarHorario();
+  cargarProfesores();
+  cargarEstudiantes();
+  cargarNotas();
+  cargarEvaluaciones();
+  cargarAnuncios();
+});
 
 const vacio = (msg) => `<div class="vacio">${msg}</div>`;
 
 async function cargarHorario() {
   const cont = document.getElementById('lista-horario');
   const { data, error } = await db.from('cfar_horario').select('*').order('id');
-  if (error) { cont.innerHTML = vacio('Error al cargar.'); return; }
+  if (error) { cont.innerHTML = vacio('Error al cargar el horario.'); return; }
   cont.innerHTML = data.length ? data.map(h => `
     <div class="card">
       <h4>${h.materia}</h4>
       <small>📅 ${h.dia} · 🕐 ${h.hora}</small>
       <small>👨‍🏫 ${h.profesor || 'Sin asignar'}</small>
     </div>
-  `).join('') : vacio('Sin clases registradas.');
+  `).join('') : vacio('Sin clases registradas aún.');
 }
 
 async function cargarProfesores() {
   const cont = document.getElementById('lista-profesores');
   const { data, error } = await db.from('cfar_profesores').select('*').order('id');
-  if (error) { cont.innerHTML = vacio('Error al cargar.'); return; }
+  if (error) { cont.innerHTML = vacio('Error al cargar los profesores.'); return; }
   cont.innerHTML = data.length ? data.map(p => `
     <div class="card">
       <h4>${p.nombre}</h4>
       <small>📚 ${p.materia || '—'}</small>
       <p>${p.resena || ''}</p>
     </div>
-  `).join('') : vacio('Sin profesores registrados.');
+  `).join('') : vacio('Sin profesores registrados aún.');
 }
 
 async function cargarEstudiantes() {
   const cont = document.getElementById('lista-estudiantes');
   const { data, error } = await db.from('cfar_estudiantes').select('id, nombre, curso').order('nombre');
-  if (error) { cont.innerHTML = vacio('Error al cargar.'); return; }
+  if (error) { cont.innerHTML = vacio('Error al cargar los estudiantes.'); return; }
   cont.innerHTML = data.length ? data.map(e => `
     <div class="card">
       <h4>${e.nombre}</h4>
       <small>🎓 ${e.curso || '—'}</small>
     </div>
-  `).join('') : vacio('Sin estudiantes registrados.');
+  `).join('') : vacio('Sin estudiantes registrados aún.');
 }
 
 async function cargarNotas() {
@@ -56,7 +67,7 @@ async function cargarNotas() {
     .from('cfar_notas')
     .select('id, materia, nota, privada, cfar_estudiantes(nombre)')
     .order('id');
-  if (error) { cont.innerHTML = vacio('Error al cargar.'); return; }
+  if (error) { cont.innerHTML = vacio('Error al cargar las notas.'); return; }
 
   cont.innerHTML = data.length ? data.map(n => {
     const nombre = n.cfar_estudiantes?.nombre || 'Desconocido';
@@ -73,7 +84,7 @@ async function cargarNotas() {
         <h4>${nombre} · ${n.materia}</h4>
         <p>📊 Nota: <strong>${n.nota}</strong></p>
       </div>`;
-  }).join('') : vacio('Sin notas registradas.');
+  }).join('') : vacio('Sin notas registradas aún.');
 }
 
 async function verPrivada(input, notaId) {
@@ -116,18 +127,11 @@ async function cargarEvaluaciones() {
 async function cargarAnuncios() {
   const cont = document.getElementById('lista-anuncios');
   const { data, error } = await db.from('cfar_anuncios').select('*').order('id', { ascending: false });
-  if (error) { cont.innerHTML = vacio('Error al cargar.'); return; }
+  if (error) { cont.innerHTML = vacio('Error al cargar los anuncios.'); return; }
   cont.innerHTML = data.length ? data.map(a => `
     <div class="card">
       <h4>📢 ${a.titulo}</h4>
       <p>${a.texto}</p>
     </div>
-  `).join('') : vacio('Sin anuncios.');
+  `).join('') : vacio('Sin anuncios por ahora.');
 }
-
-cargarHorario();
-cargarProfesores();
-cargarEstudiantes();
-cargarNotas();
-cargarEvaluaciones();
-cargarAnuncios();

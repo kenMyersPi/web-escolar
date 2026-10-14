@@ -31,23 +31,23 @@ const HORARIO_FIJO = [
   { hora: '7:00 - 8:20',  clases: {
     Lunes:     { m: 'Castellano', p: 'Prof. Ingrid' },
     Martes:    { m: 'Matemática', p: 'Prof. Elizabeth' },
-    Miércoles: { m: 'Educación Física', p: 'Prof. Daniel' },
+    Miércoles: { m: 'Educación Física', p: 'Prof. Darye' },
     Jueves:    null,
-    Viernes:   { m: 'G.H.C', p: 'Prof. Maruja' }
+    Viernes:   { m: 'G.H.C', p: 'Prof. Marquina' }
   }},
   { hora: '8:20 - 9:40',  clases: {
     Lunes:     { m: 'Orientación', p: 'Prof. Bárbara' },
     Martes:    { m: 'Biología', p: 'Prof. Bárbara' },
-    Miércoles: { m: 'G.H.C', p: 'Prof. Maruja' },
+    Miércoles: { m: 'G.H.C', p: 'Prof. Marquina' },
     Jueves:    { m: 'Orientación', p: 'Prof. Bárbara' },
-    Viernes:   { m: 'Inglés', p: 'Prof. Ponfati' }
+    Viernes:   { m: 'Inglés', p: 'Prof. Ronaldo' }
   }},
   { receso: true, hora: '9:40 - 9:55' },
   { hora: '9:55 - 11:15', clases: {
     Lunes:     null,
-    Martes:    { m: 'Inglés', p: 'Prof. Rondlis' },
+    Martes:    { m: 'Inglés', p: 'Prof. Ronaldo' },
     Miércoles: { m: 'Matemática', p: 'Prof. Elizabeth' },
-    Jueves:    { m: 'Educación Física', p: 'Prof. Daniel' },
+    Jueves:    { m: 'Educación Física', p: 'Prof. Darye' },
     Viernes:   { m: 'Química', p: 'Prof. Andy' }
   }},
   { hora: '11:15 - 11:55', clases: {

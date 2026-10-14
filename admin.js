@@ -65,15 +65,27 @@ async function cerrarSesion() {
 }
 
 async function agregarHorario() {
-  const dia = document.getElementById('h-dia').value.trim();
-  const hora = document.getElementById('h-hora').value.trim();
+  const dia_semana = document.getElementById('h-dia').value;
+  const bloque = document.getElementById('h-bloque').value;
   const materia = document.getElementById('h-materia').value.trim();
   const profesor = document.getElementById('h-profesor').value.trim();
-  if (!dia || !hora || !materia) return alert('Completa los campos');
 
-  const { error } = await db.from('cfar_horario').insert({ dia, hora, materia, profesor });
+  if (!dia_semana || !bloque || !materia) return alert('Completa los campos');
+
+  const [hora_inicio, hora_fin] = bloque.split('|');
+
+  const { error } = await db.from('cfar_horario').insert({
+    dia_semana,
+    hora_inicio,
+    hora_fin,
+    materia,
+    profesor
+  });
+
   if (error) return alert('Error: ' + error.message);
-  limpiar(['h-dia','h-hora','h-materia','h-profesor']);
+  limpiar(['h-materia','h-profesor']);
+  document.getElementById('h-dia').value = '';
+  document.getElementById('h-bloque').value = '';
   cargarTodo();
 }
 
@@ -150,8 +162,8 @@ async function borrar(tabla, id) {
 async function cargarTodo() {
   const { data: h } = await db.from('cfar_horario').select('*').order('id');
   document.getElementById('admin-horario').innerHTML = (h || []).map(x =>
-    `<li><span>${x.materia} · ${x.dia} ${x.hora}</span> <button onclick="borrar('cfar_horario', ${x.id})">Eliminar</button></li>`
-  ).join('');
+  `<li><span>${x.dia_semana} ${x.hora_inicio}-${x.hora_fin}: ${x.materia} (${x.profesor || '—'})</span> <button onclick="borrar('cfar_horario', ${x.id})">Eliminar</button></li>`
+).join('');
 
   const { data: p } = await db.from('cfar_profesores').select('*').order('id');
   document.getElementById('admin-profes').innerHTML = (p || []).map(x =>

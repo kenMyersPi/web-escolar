@@ -1,0 +1,119 @@
+/* base */
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+body { background: #f4f6fa; color: #222; -webkit-tap-highlight-color: transparent; }
+
+/* header */
+.header {
+  background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+  color: white; padding: 22px 16px; text-align: center;
+}
+.header h1 { font-size: clamp(1.1rem, 4vw, 1.7rem); }
+.header p { font-size: clamp(0.7rem, 2.5vw, 0.9rem); opacity: 0.9; margin-top: 6px; }
+
+/* nav */
+.nav {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 6px;
+  padding: 12px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  position: sticky; top: 0; z-index: 10;
+}
+.nav button, .tabs button {
+  background: #1e3a8a; color: white; border: none;
+  padding: 9px 14px; border-radius: 8px; cursor: pointer;
+  font-size: clamp(0.75rem, 2.5vw, 0.9rem); transition: 0.2s;
+}
+.nav button:hover, .tabs button:hover { background: #3b82f6; }
+
+/* secciones */
+.seccion { display: none; padding: 20px 16px; max-width: 1100px; margin: auto; }
+.seccion.activa { display: block; }
+.seccion h2 { margin-bottom: 16px; color: #1e3a8a; font-size: clamp(1.1rem, 4vw, 1.5rem); }
+
+.grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+
+.card {
+  background: white; padding: 16px; border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08); border-left: 4px solid #3b82f6;
+  word-wrap: break-word;
+}
+.card h4 { color: #1e3a8a; margin-bottom: 6px; font-size: 1rem; }
+.card small { color: #666; display: block; margin-top: 2px; }
+.card p { margin-top: 8px; font-size: 0.92rem; }
+.card .privada { color: #b91c1c; font-weight: 600; }
+.card input[type="password"] {
+  width: 100%; padding: 8px; margin-top: 8px;
+  border: 1px solid #ccc; border-radius: 8px;
+}
+
+.aviso {
+  background: #fef3c7; padding: 10px 14px; border-radius: 8px;
+  margin-bottom: 14px; border-left: 4px solid #f59e0b; font-size: 0.9rem;
+}
+
+/* footer */
+.footer {
+  text-align: center; padding: 20px 16px; background: #1e3a8a;
+  color: white; margin-top: 40px; font-size: 0.8rem;
+}
+
+/* admin */
+.admin-body { background: #eef2f9; }
+.login-box {
+  max-width: 360px; margin: 80px auto; padding: 28px;
+  background: white; border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1); text-align: center;
+}
+.login-box h2 { color: #1e3a8a; margin-bottom: 14px; }
+.login-box input {
+  width: 100%; padding: 11px; margin: 6px 0;
+  border: 1px solid #ccc; border-radius: 8px; font-size: 0.95rem;
+}
+.login-box button {
+  width: 100%; padding: 11px; background: #1e3a8a;
+  color: white; border: none; border-radius: 8px;
+  cursor: pointer; margin-top: 8px; font-size: 0.95rem;
+}
+.error { color: #dc2626; margin-top: 10px; font-size: 0.9rem; }
+
+.tabs { display: flex; flex-wrap: wrap; gap: 6px; padding: 12px; justify-content: center; }
+.tab { display: none; padding: 16px; max-width: 800px; margin: auto; }
+.tab.activa { display: block; }
+.tab h3 { color: #1e3a8a; margin-bottom: 10px; }
+.tab input, .tab textarea, .tab select {
+  width: 100%; padding: 11px; margin: 5px 0;
+  border: 1px solid #ccc; border-radius: 8px;
+  font-size: 0.95rem; font-family: inherit;
+}
+.tab textarea { min-height: 70px; resize: vertical; }
+.tab button {
+  background: #16a34a; color: white; border: none;
+  padding: 11px 22px; border-radius: 8px; cursor: pointer;
+  margin-top: 8px; font-size: 0.95rem;
+}
+.check { display: flex; align-items: center; gap: 8px; margin: 8px 0; font-size: 0.9rem; }
+.check input { width: auto; margin: 0; }
+
+.tab ul { list-style: none; margin-top: 18px; }
+.tab li {
+  background: white; padding: 12px; margin-bottom: 8px;
+  border-radius: 8px; display: flex; justify-content: space-between;
+  align-items: center; gap: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06); font-size: 0.9rem;
+  word-wrap: break-word; flex-wrap: wrap;
+}
+.tab li button { background: #dc2626; padding: 6px 12px; font-size: 0.8rem; margin: 0; }
+
+.btn-salir {
+  background: #dc2626; color: white; border: none;
+  padding: 8px 14px; border-radius: 8px; cursor: pointer;
+  margin-top: 10px; font-size: 0.85rem;
+}
+
+/* móvil */
+@media (max-width: 480px) {
+  .nav { gap: 4px; padding: 10px 6px; }
+  .nav button { padding: 8px 10px; }
+  .grid { grid-template-columns: 1fr; }
+  .tabs { gap: 4px; padding: 10px 6px; }
+  .tabs button { padding: 8px 10px; }
+  .login-box { margin: 40px 16px; }
+}

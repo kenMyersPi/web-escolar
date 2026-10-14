@@ -31,11 +31,30 @@
 
   <main>
     <section id="horario" class="seccion activa">
-      <h2>Horario de Clases</h2>
-      <div id="lista-horario" class="grid">
-        <div class="loader"><span></span><span></span><span></span></div>
-      </div>
-    </section>
+  <h2>Horario de Clases</h2>
+
+  <div class="horario-header">
+    <p><strong>Profe guía:</strong> Bárbara Sangronis</p>
+  </div>
+
+  <div class="horario-wrapper">
+    <table class="horario-tabla" id="tabla-horario">
+      <thead>
+        <tr>
+          <th class="col-hora">Hora</th>
+          <th>Lunes</th>
+          <th>Martes</th>
+          <th>Miércoles</th>
+          <th>Jueves</th>
+          <th>Viernes</th>
+        </tr>
+      </thead>
+      <tbody id="cuerpo-horario">
+        <tr><td colspan="6" class="cargando">Cargando horario...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
 
     <section id="profesores" class="seccion">
       <h2>Profesores</h2>

@@ -32,9 +32,9 @@ body {
 
 /* header */
 .header {
-  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 55%, var(--accent) 130%);
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 55%, #0891b2 130%);
   color: white;
-  padding: 40px 20px 50px;
+  padding: 44px 20px 54px;
   text-align: center;
   position: relative;
   overflow: hidden;
@@ -45,9 +45,10 @@ body {
   position: absolute;
   top: -50%; right: -10%;
   width: 400px; height: 400px;
-  background: radial-gradient(circle, rgba(255,255,255,0.15), transparent 70%);
+  background: radial-gradient(circle, rgba(255,255,255,0.16), transparent 70%);
   border-radius: 50%;
   pointer-events: none;
+  animation: float 18s ease-in-out infinite;
 }
 
 .header::after {
@@ -55,17 +56,23 @@ body {
   position: absolute;
   bottom: -60%; left: -10%;
   width: 350px; height: 350px;
-  background: radial-gradient(circle, rgba(6,182,212,0.25), transparent 70%);
+  background: radial-gradient(circle, rgba(6,182,212,0.28), transparent 70%);
   border-radius: 50%;
   pointer-events: none;
+  animation: float 22s ease-in-out infinite reverse;
 }
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-20px, 20px); }
+}
+
+.header-inner { position: relative; z-index: 1; }
 
 .header h1 {
   font-size: clamp(1.35rem, 4.5vw, 2.2rem);
   font-weight: 700;
   letter-spacing: -0.02em;
-  position: relative;
-  z-index: 1;
   text-shadow: 0 2px 12px rgba(0,0,0,0.15);
 }
 
@@ -74,32 +81,29 @@ body {
   opacity: 0.9;
   margin-top: 10px;
   font-weight: 400;
-  position: relative;
-  z-index: 1;
 }
 
 .header .badge {
   display: inline-block;
-  margin-top: 14px;
-  padding: 5px 14px;
+  margin-top: 16px;
+  padding: 5px 16px;
   background: rgba(255,255,255,0.15);
   border: 1px solid rgba(255,255,255,0.25);
   border-radius: 999px;
   font-size: 0.75rem;
   font-weight: 500;
   backdrop-filter: blur(8px);
-  position: relative;
-  z-index: 1;
+  -webkit-backdrop-filter: blur(8px);
 }
 
 /* nav */
-.nav {
+.nav, .tabs {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 8px;
   padding: 16px 14px;
-  background: rgba(255,255,255,0.85);
+  background: rgba(255,255,255,0.9);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border);
@@ -118,7 +122,7 @@ body {
   font-size: clamp(0.78rem, 2.4vw, 0.9rem);
   font-weight: 500;
   font-family: inherit;
-  transition: all 0.2s ease;
+  transition: all 0.22s ease;
   white-space: nowrap;
 }
 
@@ -126,6 +130,7 @@ body {
   background: rgba(59,130,246,0.08);
   color: var(--primary);
   border-color: rgba(59,130,246,0.2);
+  transform: translateY(-1px);
 }
 
 .nav button.activo, .tabs button.activo {
@@ -141,13 +146,15 @@ body {
   padding: 36px 20px 60px;
   max-width: 1200px;
   margin: 0 auto;
-  animation: fadeIn 0.35s ease;
 }
 
-.seccion.activa { display: block; }
+.seccion.activa {
+  display: block;
+  animation: fadeIn 0.4s ease;
+}
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -184,10 +191,16 @@ body {
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   border: 1px solid var(--border);
-  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
   word-wrap: break-word;
   position: relative;
   overflow: hidden;
+  animation: slideUp 0.4s ease both;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .card::before {
@@ -197,11 +210,11 @@ body {
   width: 4px;
   background: linear-gradient(180deg, var(--primary), var(--accent));
   opacity: 0;
-  transition: opacity 0.22s ease;
+  transition: opacity 0.25s ease;
 }
 
 .card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-4px);
   box-shadow: var(--shadow-hover);
 }
 
@@ -275,12 +288,45 @@ body {
 .vacio {
   grid-column: 1 / -1;
   text-align: center;
-  padding: 50px 20px;
+  padding: 55px 20px;
   color: var(--text-muted);
   background: white;
   border-radius: var(--radius);
   border: 2px dashed var(--border);
   font-size: 0.92rem;
+}
+
+.vacio::before {
+  content: '📭';
+  display: block;
+  font-size: 2.2rem;
+  margin-bottom: 10px;
+  opacity: 0.6;
+}
+
+/* loader */
+.loader {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 40px;
+}
+
+.loader span {
+  width: 10px;
+  height: 10px;
+  background: var(--primary);
+  border-radius: 50%;
+  animation: bounce 1.2s ease-in-out infinite;
+}
+
+.loader span:nth-child(2) { animation-delay: 0.15s; }
+.loader span:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes bounce {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+  40% { transform: scale(1); opacity: 1; }
 }
 
 /* footer */
@@ -291,41 +337,46 @@ body {
   color: rgba(255,255,255,0.75);
   margin-top: 60px;
   font-size: 0.82rem;
-  letter-spacing: 0.01em;
 }
 
-/* admin */
-.admin-body { background: #eef2f9; }
+/* =================== ADMIN =================== */
+.admin-body { background: #eef2f9; min-height: 100vh; }
 
 .login-box {
-  max-width: 380px;
-  margin: 100px auto;
-  padding: 36px 30px;
+  max-width: 400px;
+  margin: 90px auto;
+  padding: 40px 32px;
   background: white;
-  border-radius: 18px;
-  box-shadow: 0 20px 50px rgba(15,23,42,0.15);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(15,23,42,0.18);
   text-align: center;
+  animation: fadeIn 0.5s ease;
+}
+
+.login-icon {
+  font-size: 2.4rem;
+  margin-bottom: 8px;
 }
 
 .login-box h2 {
   color: var(--primary-dark);
   margin-bottom: 6px;
-  font-size: 1.3rem;
+  font-size: 1.35rem;
   font-weight: 700;
 }
 
 .login-box .sub {
   color: var(--text-muted);
   font-size: 0.85rem;
-  margin-bottom: 20px;
+  margin-bottom: 22px;
 }
 
 .login-box input {
   width: 100%;
-  padding: 12px 14px;
+  padding: 13px 15px;
   margin: 7px 0;
   border: 1.5px solid var(--border);
-  border-radius: 10px;
+  border-radius: 11px;
   font-size: 0.92rem;
   font-family: inherit;
   transition: border-color 0.2s, box-shadow 0.2s;
@@ -341,11 +392,11 @@ body {
 
 .login-box button {
   width: 100%;
-  padding: 12px;
+  padding: 13px;
   background: linear-gradient(135deg, var(--primary), var(--primary-light));
   color: white;
   border: none;
-  border-radius: 10px;
+  border-radius: 11px;
   cursor: pointer;
   margin-top: 12px;
   font-size: 0.95rem;
@@ -355,10 +406,12 @@ body {
   box-shadow: 0 6px 16px rgba(30,64,175,0.3);
 }
 
-.login-box button:hover {
+.login-box button:hover:not(:disabled) {
   transform: translateY(-1px);
   box-shadow: 0 10px 22px rgba(30,64,175,0.4);
 }
+
+.login-box button:disabled { opacity: 0.6; cursor: wait; }
 
 .error {
   color: #dc2626;
@@ -368,38 +421,43 @@ body {
   min-height: 18px;
 }
 
-.tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  padding: 16px 14px;
-  justify-content: center;
-  background: rgba(255,255,255,0.85);
-  backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--border);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
+.header-admin { padding: 32px 20px 40px; }
 
 .tab {
   display: none;
-  padding: 28px 20px;
-  max-width: 780px;
+  padding: 28px 20px 60px;
+  max-width: 820px;
   margin: 0 auto;
-  animation: fadeIn 0.3s ease;
 }
 
-.tab.activa { display: block; }
+.tab.activa {
+  display: block;
+  animation: fadeIn 0.35s ease;
+}
 
-.tab h3 {
+.form-card {
+  background: white;
+  padding: 26px;
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  margin-bottom: 22px;
+}
+
+.form-card h3 {
   color: var(--primary-dark);
   margin-bottom: 16px;
   font-size: 1.05rem;
   font-weight: 600;
 }
 
-.tab input, .tab textarea, .tab select {
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.form-card input, .form-card textarea, .form-card select {
   width: 100%;
   padding: 12px 14px;
   margin: 6px 0;
@@ -408,25 +466,26 @@ body {
   font-size: 0.92rem;
   font-family: inherit;
   transition: border-color 0.2s, box-shadow 0.2s;
-  background: white;
+  background: #fafbfc;
 }
 
-.tab input:focus, .tab textarea:focus, .tab select:focus {
+.form-card input:focus, .form-card textarea:focus, .form-card select:focus {
   outline: none;
   border-color: var(--primary-light);
   box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+  background: white;
 }
 
-.tab textarea { min-height: 80px; resize: vertical; }
+.form-card textarea { min-height: 80px; resize: vertical; }
 
-.tab button {
+.btn-agregar {
   background: linear-gradient(135deg, #059669, #10b981);
   color: white;
   border: none;
-  padding: 12px 24px;
+  padding: 12px 26px;
   border-radius: 10px;
   cursor: pointer;
-  margin-top: 10px;
+  margin-top: 12px;
   font-size: 0.92rem;
   font-weight: 600;
   font-family: inherit;
@@ -434,7 +493,7 @@ body {
   box-shadow: 0 6px 16px rgba(16,185,129,0.3);
 }
 
-.tab button:hover {
+.btn-agregar:hover {
   transform: translateY(-1px);
   box-shadow: 0 10px 22px rgba(16,185,129,0.4);
 }
@@ -443,10 +502,10 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin: 12px 0;
+  margin: 14px 0;
   font-size: 0.9rem;
-  color: var(--text);
   cursor: pointer;
+  user-select: none;
 }
 
 .check input {
@@ -456,11 +515,11 @@ body {
   cursor: pointer;
 }
 
-.tab ul { list-style: none; margin-top: 22px; }
+.lista-admin { list-style: none; margin-top: 8px; }
 
-.tab li {
+.lista-admin li {
   background: white;
-  padding: 14px 16px;
+  padding: 14px 18px;
   margin-bottom: 10px;
   border-radius: 12px;
   display: flex;
@@ -472,38 +531,40 @@ body {
   border: 1px solid var(--border);
   word-wrap: break-word;
   flex-wrap: wrap;
-  transition: box-shadow 0.2s;
+  transition: box-shadow 0.2s, transform 0.2s;
 }
 
-.tab li:hover { box-shadow: var(--shadow-hover); }
+.lista-admin li:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateX(3px);
+}
 
-.tab li button {
+.lista-admin li button {
   background: #fee2e2;
   color: #b91c1c;
+  border: none;
   padding: 7px 14px;
   font-size: 0.8rem;
-  margin: 0;
-  box-shadow: none;
   font-weight: 600;
   border-radius: 8px;
+  cursor: pointer;
   transition: background 0.2s, color 0.2s;
+  font-family: inherit;
 }
 
-.tab li button:hover {
+.lista-admin li button:hover {
   background: #dc2626;
   color: white;
-  transform: none;
-  box-shadow: none;
 }
 
 .btn-salir {
   background: rgba(255,255,255,0.15);
   color: white;
   border: 1px solid rgba(255,255,255,0.3);
-  padding: 8px 16px;
+  padding: 8px 18px;
   border-radius: 8px;
   cursor: pointer;
-  margin-top: 12px;
+  margin-top: 14px;
   font-size: 0.85rem;
   font-family: inherit;
   font-weight: 500;
@@ -514,16 +575,22 @@ body {
 
 /* responsive */
 @media (max-width: 640px) {
-  .header { padding: 30px 16px 40px; }
-  .nav { gap: 6px; padding: 12px 8px; overflow-x: auto; flex-wrap: nowrap; justify-content: flex-start; }
-  .nav::-webkit-scrollbar { display: none; }
-  .nav button { padding: 8px 14px; font-size: 0.8rem; }
+  .header { padding: 32px 16px 42px; }
+  .nav, .tabs {
+    gap: 6px;
+    padding: 12px 8px;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    scrollbar-width: none;
+  }
+  .nav::-webkit-scrollbar, .tabs::-webkit-scrollbar { display: none; }
+  .nav button, .tabs button { padding: 8px 14px; font-size: 0.8rem; }
   .seccion { padding: 24px 14px 50px; }
   .grid { grid-template-columns: 1fr; gap: 14px; }
-  .tabs { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; padding: 12px 8px; }
-  .tabs::-webkit-scrollbar { display: none; }
-  .login-box { margin: 50px 16px; padding: 30px 22px; }
-  .tab { padding: 20px 14px; }
+  .login-box { margin: 40px 16px; padding: 32px 22px; }
+  .tab { padding: 20px 14px 50px; }
+  .form-card { padding: 20px; }
 }
 
 /* modo oscuro */
@@ -541,8 +608,13 @@ body {
   .nav, .tabs { background: rgba(15,23,42,0.9); }
   .nav button:hover, .tabs button:hover { background: rgba(59,130,246,0.15); }
   .card p { color: #cbd5e1; }
-  .card input[type="password"], .login-box input, .tab input, .tab textarea, .tab select { background: #0f172a; color: white; }
+  .card input[type="password"],
+  .login-box input,
+  .form-card input,
+  .form-card textarea,
+  .form-card select { background: #0f172a; color: white; }
   .vacio { background: #1e293b; }
   .admin-body { background: #0f172a; }
-  .tab li { background: #1e293b; }
+  .form-card, .login-box { background: #1e293b; }
+  .lista-admin li { background: #1e293b; }
 }

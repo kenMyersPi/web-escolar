@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Admin · KenMyers</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body class="admin-body">
+
+  <div id="login-admin" class="login-box">
+    <h2>Acceso Admin</h2>
+    <input type="email" id="admin-email" placeholder="Correo">
+    <input type="password" id="admin-pass" placeholder="Contraseña">
+    <button onclick="loginAdmin()">Entrar</button>
+    <p id="error-login" class="error"></p>
+  </div>
+
+  <div id="panel-admin" style="display:none;">
+    <header class="header">
+      <h1>Panel · KenMyers</h1>
+      <button onclick="cerrarSesion()" class="btn-salir">Salir</button>
+    </header>
+
+    <div class="tabs">
+      <button onclick="mostrarTab('tab-horario')">Horario</button>
+      <button onclick="mostrarTab('tab-profes')">Profesores</button>
+      <button onclick="mostrarTab('tab-estudiantes')">Estudiantes</button>
+      <button onclick="mostrarTab('tab-notas')">Notas</button>
+      <button onclick="mostrarTab('tab-eval')">Proyectos/Exámenes</button>
+      <button onclick="mostrarTab('tab-anuncios')">Anuncios</button>
+    </div>
+
+    <section id="tab-horario" class="tab activa">
+      <h3>Nueva clase</h3>
+      <input id="h-dia" placeholder="Día">
+      <input id="h-hora" placeholder="Hora">
+      <input id="h-materia" placeholder="Materia">
+      <input id="h-profesor" placeholder="Profesor">
+      <button onclick="agregarHorario()">Agregar</button>
+      <ul id="admin-horario"></ul>
+    </section>
+
+    <section id="tab-profes" class="tab">
+      <h3>Nuevo profesor</h3>
+      <input id="p-nombre" placeholder="Nombre">
+      <input id="p-materia" placeholder="Materia">
+      <textarea id="p-resena" placeholder="Reseña"></textarea>
+      <button onclick="agregarProfesor()">Agregar</button>
+      <ul id="admin-profes"></ul>
+    </section>
+
+    <section id="tab-estudiantes" class="tab">
+      <h3>Nuevo estudiante</h3>
+      <input id="e-nombre" placeholder="Nombre">
+      <input id="e-curso" placeholder="Curso">
+      <input id="e-clave" placeholder="Clave personal (para notas privadas)">
+      <button onclick="agregarEstudiante()">Agregar</button>
+      <ul id="admin-estudiantes"></ul>
+    </section>
+
+    <section id="tab-notas" class="tab">
+      <h3>Nueva nota</h3>
+      <select id="n-estudiante"></select>
+      <input id="n-materia" placeholder="Materia">
+      <input id="n-nota" type="number" placeholder="Nota">
+      <label class="check"><input type="checkbox" id="n-privada"> Privada</label>
+      <button onclick="agregarNota()">Agregar</button>
+      <ul id="admin-notas"></ul>
+    </section>
+
+    <section id="tab-eval" class="tab">
+      <h3>Nuevo proyecto / examen</h3>
+      <select id="ev-tipo">
+        <option value="Proyecto">Proyecto</option>
+        <option value="Examen">Examen</option>
+      </select>
+      <input id="ev-titulo" placeholder="Título">
+      <input id="ev-materia" placeholder="Materia">
+      <input id="ev-fecha" type="date">
+      <textarea id="ev-desc" placeholder="Descripción"></textarea>
+      <button onclick="agregarEvaluacion()">Agregar</button>
+      <ul id="admin-eval"></ul>
+    </section>
+
+    <section id="tab-anuncios" class="tab">
+      <h3>Nuevo anuncio</h3>
+      <input id="a-titulo" placeholder="Título">
+      <textarea id="a-texto" placeholder="Contenido"></textarea>
+      <button onclick="agregarAnuncio()">Agregar</button>
+      <ul id="admin-anuncios"></ul>
+    </section>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

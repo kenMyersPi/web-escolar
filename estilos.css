@@ -618,3 +618,132 @@ body {
   .form-card, .login-box { background: #1e293b; }
   .lista-admin li { background: #1e293b; }
 }
+/* =================== HORARIO TIPO GRILLA =================== */
+
+.horario-header {
+  background: white;
+  padding: 16px 20px;
+  border-radius: 12px 12px 0 0;
+  border: 1px solid var(--border);
+  border-bottom: none;
+  font-size: 0.95rem;
+  color: var(--primary-dark);
+  text-align: center;
+}
+
+.horario-header strong { font-weight: 600; }
+
+.horario-wrapper {
+  overflow-x: auto;
+  background: white;
+  border-radius: 0 0 12px 12px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  -webkit-overflow-scrolling: touch;
+}
+
+.horario-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  min-width: 640px;
+}
+
+.horario-tabla thead th {
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+  color: white;
+  padding: 14px 10px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  border-right: 1px solid rgba(255,255,255,0.15);
+}
+
+.horario-tabla thead th:last-child { border-right: none; }
+
+.horario-tabla .col-hora {
+  width: 110px;
+  background: linear-gradient(135deg, #0f2557, #1e3a8a);
+}
+
+.horario-tabla tbody td {
+  padding: 14px 10px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  vertical-align: middle;
+  transition: background 0.15s;
+}
+
+.horario-tabla tbody td:last-child { border-right: none; }
+.horario-tabla tbody tr:last-child td { border-bottom: none; }
+
+.horario-tabla tbody tr:hover td:not(.celda-hora) {
+  background: rgba(59,130,246,0.05);
+}
+
+.horario-tabla .celda-hora {
+  background: #f1f5f9;
+  font-weight: 600;
+  color: var(--primary-dark);
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.horario-tabla .celda-materia {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.horario-tabla .materia-nombre {
+  font-weight: 600;
+  color: var(--primary-dark);
+  font-size: 0.85rem;
+}
+
+.horario-tabla .materia-profe {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.horario-tabla .celda-vacia {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  opacity: 0.5;
+}
+
+.horario-tabla .celda-receso {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  color: #78350f;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+
+.horario-tabla .cargando {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+/* responsive: en celular scrollea horizontal */
+@media (max-width: 640px) {
+  .horario-tabla { font-size: 0.78rem; min-width: 580px; }
+  .horario-tabla thead th { padding: 11px 8px; font-size: 0.78rem; }
+  .horario-tabla tbody td { padding: 11px 8px; }
+  .horario-tabla .col-hora { width: 90px; }
+  .horario-header { font-size: 0.85rem; padding: 12px 14px; }
+}
+
+/* modo oscuro */
+@media (prefers-color-scheme: dark) {
+  .horario-header { background: #1e293b; }
+  .horario-wrapper { background: #1e293b; }
+  .horario-tabla tbody td { border-color: #334155; }
+  .horario-tabla .celda-hora { background: #0f172a; color: #cbd5e1; }
+  .horario-tabla .celda-receso { background: linear-gradient(135deg, #78350f, #92400e); color: #fef3c7; }
+}

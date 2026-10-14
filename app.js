@@ -23,17 +23,70 @@ document.addEventListener('DOMContentLoaded', () => {
 
 const vacio = (msg) => `<div class="vacio">${msg}</div>`;
 
+// horario estilo grilla
+
+const DIAS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
+
+// bloques predefinidos del horario
+const BLOQUES_HORA = [
+  { inicio: '7:00',  fin: '7:40'  },
+  { inicio: '7:40',  fin: '8:20'  },
+  { inicio: '8:20',  fin: '9:00'  },
+  { inicio: '9:00',  fin: '9:30', receso: true },
+  { inicio: '9:30',  fin: '10:10' },
+  { inicio: '10:10', fin: '10:50' },
+  { inicio: '10:50', fin: '11:30' }
+];
+
 async function cargarHorario() {
-  const cont = document.getElementById('lista-horario');
-  const { data, error } = await db.from('cfar_horario').select('*').order('id');
-  if (error) { cont.innerHTML = vacio('Error al cargar el horario.'); return; }
-  cont.innerHTML = data.length ? data.map(h => `
-    <div class="card">
-      <h4>${h.materia}</h4>
-      <small>📅 ${h.dia} · 🕐 ${h.hora}</small>
-      <small>👨‍🏫 ${h.profesor || 'Sin asignar'}</small>
-    </div>
-  `).join('') : vacio('Sin clases registradas aún.');
+  const tbody = document.getElementById('cuerpo-horario');
+  const { data, error } = await db.from('cfar_horario').select('*');
+
+  if (error) {
+    tbody.innerHTML = `<tr><td colspan="6" class="cargando">Error al cargar el horario.</td></tr>`;
+    return;
+  }
+
+  // agrupo por dia y hora
+  const mapa = {};
+  (data || []).forEach(h => {
+    const key = `${h.dia_semana}|${h.hora_inicio}`;
+    mapa[key] = h;
+  });
+
+  let html = '';
+  BLOQUES_HORA.forEach(bloque => {
+    const etiqueta = `${bloque.inicio} - ${bloque.fin}`;
+
+    if (bloque.receso) {
+      html += `
+        <tr>
+          <td class="celda-hora">${etiqueta}</td>
+          <td colspan="5" class="celda-receso">☕ Receso</td>
+        </tr>`;
+      return;
+    }
+
+    html += `<tr><td class="celda-hora">${etiqueta}</td>`;
+    DIAS.forEach(dia => {
+      const key = `${dia}|${bloque.inicio}`;
+      const clase = mapa[key];
+      if (clase) {
+        html += `
+          <td>
+            <div class="celda-materia">
+              <span class="materia-nombre">${clase.materia}</span>
+              <span class="materia-profe">${clase.profesor || ''}</span>
+            </div>
+          </td>`;
+      } else {
+        html += `<td class="celda-vacia">—</td>`;
+      }
+    });
+    html += `</tr>`;
+  });
+
+  tbody.innerHTML = html;
 }
 
 async function cargarProfesores() {

@@ -23,20 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 const vacio = (msg) => `<div class="vacio">${msg}</div>`;
 
-// horario estilo grilla
-
 const DIAS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
-
-// bloques predefinidos del horario
-const BLOQUES_HORA = [
-  { inicio: '7:00',  fin: '7:40'  },
-  { inicio: '7:40',  fin: '8:20'  },
-  { inicio: '8:20',  fin: '9:00'  },
-  { inicio: '9:00',  fin: '9:30', receso: true },
-  { inicio: '9:30',  fin: '10:10' },
-  { inicio: '10:10', fin: '10:50' },
-  { inicio: '10:50', fin: '11:30' }
-];
 
 // horario fijo (no cambia)
 
@@ -94,10 +81,9 @@ const HORARIO_FIJO = [
 
 function cargarHorario() {
   const tbody = document.getElementById('cuerpo-horario');
-  const DIAS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
+  if (!tbody) return;
 
   tbody.innerHTML = HORARIO_FIJO.map(bloque => {
-    // receso
     if (bloque.receso) {
       return `
         <tr>
@@ -106,7 +92,6 @@ function cargarHorario() {
         </tr>`;
     }
 
-    // fila normal
     let fila = `<tr><td class="celda-hora">${bloque.hora}</td>`;
     DIAS.forEach(dia => {
       const c = bloque.clases[dia];

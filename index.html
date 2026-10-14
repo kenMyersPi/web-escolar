@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Colegio Francisco Antonio Risquez</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+  <header class="header">
+    <h1>Colegio Francisco Antonio Risquez</h1>
+    <p>Profe guía: Bárbara Sangronis · Creado por KenMyers</p>
+  </header>
+
+  <nav class="nav">
+    <button onclick="mostrarSeccion('horario')">Horario</button>
+    <button onclick="mostrarSeccion('profesores')">Profesores</button>
+    <button onclick="mostrarSeccion('estudiantes')">Estudiantes</button>
+    <button onclick="mostrarSeccion('notas')">Notas</button>
+    <button onclick="mostrarSeccion('evaluaciones')">Proyectos y Exámenes</button>
+    <button onclick="mostrarSeccion('anuncios')">Anuncios</button>
+  </nav>
+
+  <main>
+    <section id="horario" class="seccion activa">
+      <h2>📅 Horario de Clases</h2>
+      <div id="lista-horario" class="grid"></div>
+    </section>
+
+    <section id="profesores" class="seccion">
+      <h2>👨‍🏫 Profesores</h2>
+      <div id="lista-profesores" class="grid"></div>
+    </section>
+
+    <section id="estudiantes" class="seccion">
+      <h2>🎓 Estudiantes</h2>
+      <div id="lista-estudiantes" class="grid"></div>
+    </section>
+
+    <section id="notas" class="seccion">
+      <h2>📊 Notas</h2>
+      <p class="aviso">Las notas marcadas con 🔒 son privadas.</p>
+      <div id="lista-notas" class="grid"></div>
+    </section>
+
+    <section id="evaluaciones" class="seccion">
+      <h2>📝 Proyectos y Exámenes</h2>
+      <div id="lista-evaluaciones" class="grid"></div>
+    </section>
+
+    <section id="anuncios" class="seccion">
+      <h2>📢 Anuncios</h2>
+      <div id="lista-anuncios" class="grid"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© 2024 Colegio Francisco Antonio Risquez · Directora · KenMyers</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

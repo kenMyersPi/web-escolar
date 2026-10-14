@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1e3a8a">
   <title>Colegio Francisco Antonio Risquez</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,55 +13,69 @@
 <body>
 
   <header class="header">
-    <h1>Colegio Francisco Antonio Risquez</h1>
-    <p>Profe guía: Bárbara Sangronis · Creado por KenMyers</p>
-    <span class="badge">📚 Plataforma Escolar 2024</span>
+    <div class="header-inner">
+      <h1>Colegio Francisco Antonio Risquez</h1>
+      <p>Profe guía: Bárbara Sangronis · Creado por KenMyers</p>
+      <span class="badge">📚 Plataforma Escolar</span>
+    </div>
   </header>
 
   <nav class="nav">
-    <button class="activo" onclick="mostrarSeccion('horario', event)">Horario</button>
-    <button onclick="mostrarSeccion('profesores', event)">Profesores</button>
-    <button onclick="mostrarSeccion('estudiantes', event)">Estudiantes</button>
-    <button onclick="mostrarSeccion('notas', event)">Notas</button>
-    <button onclick="mostrarSeccion('evaluaciones', event)">Proyectos y Exámenes</button>
-    <button onclick="mostrarSeccion('anuncios', event)">Anuncios</button>
+    <button class="activo" data-seccion="horario">Horario</button>
+    <button data-seccion="profesores">Profesores</button>
+    <button data-seccion="estudiantes">Estudiantes</button>
+    <button data-seccion="notas">Notas</button>
+    <button data-seccion="evaluaciones">Proyectos y Exámenes</button>
+    <button data-seccion="anuncios">Anuncios</button>
   </nav>
 
   <main>
     <section id="horario" class="seccion activa">
       <h2>Horario de Clases</h2>
-      <div id="lista-horario" class="grid"></div>
+      <div id="lista-horario" class="grid">
+        <div class="loader"><span></span><span></span><span></span></div>
+      </div>
     </section>
 
     <section id="profesores" class="seccion">
       <h2>Profesores</h2>
-      <div id="lista-profesores" class="grid"></div>
+      <div id="lista-profesores" class="grid">
+        <div class="loader"><span></span><span></span><span></span></div>
+      </div>
     </section>
 
     <section id="estudiantes" class="seccion">
       <h2>Estudiantes</h2>
-      <div id="lista-estudiantes" class="grid"></div>
+      <div id="lista-estudiantes" class="grid">
+        <div class="loader"><span></span><span></span><span></span></div>
+      </div>
     </section>
 
     <section id="notas" class="seccion">
       <h2>Notas</h2>
-      <p class="aviso">Las notas marcadas con 🔒 son privadas.</p>
-      <div id="lista-notas" class="grid"></div>
+      <p class="aviso">Las notas marcadas con 🔒 son privadas. Ingresa la clave del estudiante para verlas.</p>
+      <div id="lista-notas" class="grid">
+        <div class="loader"><span></span><span></span><span></span></div>
+      </div>
     </section>
 
     <section id="evaluaciones" class="seccion">
       <h2>Proyectos y Exámenes</h2>
-      <div id="lista-evaluaciones" class="grid"></div>
+      <div id="lista-evaluaciones" class="grid">
+        <div class="loader"><span></span><span></span><span></span></div>
+      </div>
     </section>
 
     <section id="anuncios" class="seccion">
       <h2>Anuncios</h2>
-      <div id="lista-anuncios" class="grid"></div>
+      <div id="lista-anuncios" class="grid">
+        <div class="loader"><span></span><span></span><span></span></div>
+      </div>
     </section>
   </main>
 
   <footer class="footer">
-    <p>© 2024 Colegio Francisco Antonio Risquez · Directora · KenMyers</p>
+    <p>© 2026 Colegio Francisco Antonio Risquez · KenMyers</p>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

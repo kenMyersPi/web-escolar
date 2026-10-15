@@ -12,7 +12,6 @@
 </head>
 <body class="admin-body">
 
-  <!-- LOGIN -->
   <div id="login-admin" class="login-box">
     <div class="login-icon">🔐</div>
     <h2>Acceso Admin</h2>
@@ -23,7 +22,6 @@
     <p id="error-login" class="error"></p>
   </div>
 
-  <!-- PANEL -->
   <div id="panel-admin" style="display:none;">
     <header class="header header-admin">
       <div class="header-inner">
@@ -34,7 +32,6 @@
     </header>
 
     <div class="tabs">
-      <button class="activo" data-tab="tab-horario">Horario</button>
       <button data-tab="tab-profes">Profesores</button>
       <button data-tab="tab-estudiantes">Estudiantes</button>
       <button data-tab="tab-notas">Notas</button>
@@ -42,52 +39,49 @@
       <button data-tab="tab-anuncios">Anuncios</button>
     </div>
 
-    <section id="tab-horario" class="tab activa">
-      <div class="form-card">
-        <h3>Nueva clase</h3>
-        <div class="form-grid">
-          <input id="h-dia" placeholder="Día (Lunes, Martes...)">
-          <input id="h-hora" placeholder="Hora (7:00 - 8:00)">
-          <input id="h-materia" placeholder="Materia">
-          <input id="h-profesor" placeholder="Profesor">
-        </div>
-        <button onclick="agregarHorario()" class="btn-agregar">Agregar clase</button>
-      </div>
-      <ul id="admin-horario" class="lista-admin"></ul>
-    </section>
+    <div id="contador" class="contador-admin" style="max-width:820px;margin:16px auto 0;"></div>
 
-    <section id="tab-profes" class="tab">
+    <datalist id="materias-list"></datalist>
+
+    <!-- PROFESORES -->
+    <section id="tab-profes" class="tab activa">
       <div class="form-card">
         <h3>Nuevo profesor</h3>
         <div class="form-grid">
           <input id="p-nombre" placeholder="Nombre completo">
-          <input id="p-materia" placeholder="Materia que dicta">
+          <input id="p-materia" placeholder="Materia" list="materias-list">
+          <input id="p-apodo" placeholder="Apodo (opcional)">
         </div>
+        <textarea id="p-bio" placeholder="Bio corta (opcional)"></textarea>
         <textarea id="p-resena" placeholder="Reseña / descripción"></textarea>
         <button onclick="agregarProfesor()" class="btn-agregar">Agregar profesor</button>
       </div>
       <ul id="admin-profes" class="lista-admin"></ul>
     </section>
 
+    <!-- ESTUDIANTES -->
     <section id="tab-estudiantes" class="tab">
       <div class="form-card">
         <h3>Nuevo estudiante</h3>
         <div class="form-grid">
           <input id="e-nombre" placeholder="Nombre completo">
           <input id="e-curso" placeholder="Curso / Año">
-          <input id="e-clave" placeholder="Clave personal (para notas privadas)">
+          <input id="e-clave" placeholder="Clave personal">
+          <input id="e-apodo" placeholder="Apodo (opcional)">
         </div>
+        <textarea id="e-bio" placeholder="Bio corta (opcional)"></textarea>
         <button onclick="agregarEstudiante()" class="btn-agregar">Agregar estudiante</button>
       </div>
       <ul id="admin-estudiantes" class="lista-admin"></ul>
     </section>
 
+    <!-- NOTAS -->
     <section id="tab-notas" class="tab">
       <div class="form-card">
         <h3>Nueva nota</h3>
         <div class="form-grid">
           <select id="n-estudiante"></select>
-          <input id="n-materia" placeholder="Materia">
+          <input id="n-materia" placeholder="Materia" list="materias-list">
           <input id="n-nota" type="number" placeholder="Nota (0-20)" step="0.01">
         </div>
         <label class="check"><input type="checkbox" id="n-privada"> Marcar como privada</label>
@@ -96,6 +90,7 @@
       <ul id="admin-notas" class="lista-admin"></ul>
     </section>
 
+    <!-- EVALUACIONES -->
     <section id="tab-eval" class="tab">
       <div class="form-card">
         <h3>Nuevo proyecto / examen</h3>
@@ -105,15 +100,17 @@
             <option value="Examen">Examen</option>
           </select>
           <input id="ev-titulo" placeholder="Título">
-          <input id="ev-materia" placeholder="Materia">
+          <input id="ev-materia" placeholder="Materia" list="materias-list">
           <input id="ev-fecha" type="date">
         </div>
-        <textarea id="ev-desc" placeholder="Descripción / instrucciones"></textarea>
+        <textarea id="ev-desc" placeholder="Descripción corta / instrucciones"></textarea>
+        <textarea id="ev-contenido" placeholder="Tema completo para los estudiantes (todo el contenido de la clase)" style="min-height:200px;"></textarea>
         <button onclick="agregarEvaluacion()" class="btn-agregar">Agregar</button>
       </div>
       <ul id="admin-eval" class="lista-admin"></ul>
     </section>
 
+    <!-- ANUNCIOS -->
     <section id="tab-anuncios" class="tab">
       <div class="form-card">
         <h3>Nuevo anuncio</h3>

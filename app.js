@@ -36,10 +36,10 @@ const HORARIO_FIJO = [
     Viernes:   { m: 'G.H.C', p: 'Prof. Marquina' }
   }},
   { hora: '8:20 - 9:40',  clases: {
-    Lunes:     { m: 'Orientación', p: 'Prof. Bárbara' },
+    Lunes:     { m: 'Grupo estable', p: 'Prof. Bárbara' },
     Martes:    { m: 'Biología', p: 'Prof. Bárbara' },
     Miércoles: { m: 'G.H.C', p: 'Prof. Marquina' },
-    Jueves:    { m: 'Orientación', p: 'Prof. Bárbara' },
+    Jueves:    { m: 'Grupo estable', p: 'Prof. Bárbara' },
     Viernes:   { m: 'Inglés', p: 'Prof. Ronaldo' }
   }},
   { receso: true, hora: '9:40 - 9:55' },
@@ -51,10 +51,10 @@ const HORARIO_FIJO = [
     Viernes:   { m: 'Química', p: 'Prof. Andy' }
   }},
   { hora: '11:15 - 11:55', clases: {
-    Lunes:     { m: 'Orientación', p: 'Prof. Bárbara' },
+    Lunes:     { m: 'Grupo estable', p: 'Prof. Bárbara' },
     Martes:    { m: 'Biología', p: 'Prof. Bárbara' },
     Miércoles: { m: 'Química', p: 'Prof. Andy' },
-    Jueves:    { m: 'Orientación', p: 'Prof. Bárbara' },
+    Jueves:    { m: 'Grupo estable', p: 'Prof. Bárbara' },
     Viernes:   { m: 'Biología', p: 'Prof. Bárbara' }
   }},
   { receso: true, hora: '11:55 - 12:10' },

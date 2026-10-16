@@ -62,10 +62,7 @@ async function cerrarSesion() {
   location.reload();
 }
 
-// ============ HORARIO (fijo, no se toca) ============
-// ya no se administra desde aquí
-
-// ============ PROFESORES ============
+// PROFESORES
 async function agregarProfesor() {
   const nombre = document.getElementById('p-nombre').value.trim();
   const materia = document.getElementById('p-materia').value.trim();
@@ -86,23 +83,18 @@ async function editarProfesor(id) {
   const p = CACHE.profesores.find(x => x.id === id);
   if (!p) return;
 
-  const nombre = prompt('Nombre:', p.nombre);
-  if (nombre === null) return;
-  const materia = prompt('Materia:', p.materia || '');
-  if (materia === null) return;
-  const apodo = prompt('Apodo:', p.apodo || '');
-  if (apodo === null) return;
-  const bio = prompt('Bio:', p.bio || '');
-  if (bio === null) return;
-  const resena = prompt('Reseña:', p.resena || '');
-  if (resena === null) return;
+  const nombre = prompt('Nombre:', p.nombre); if (nombre === null) return;
+  const materia = prompt('Materia:', p.materia || ''); if (materia === null) return;
+  const apodo = prompt('Apodo:', p.apodo || ''); if (apodo === null) return;
+  const bio = prompt('Bio:', p.bio || ''); if (bio === null) return;
+  const resena = prompt('Reseña:', p.resena || ''); if (resena === null) return;
 
   const { error } = await db.from('cfar_profesores').update({ nombre, materia, apodo, bio, resena }).eq('id', id);
   if (error) return alert('Error: ' + error.message);
   cargarTodo();
 }
 
-// ============ ESTUDIANTES ============
+// ESTUDIANTES
 async function agregarEstudiante() {
   const nombre = document.getElementById('e-nombre').value.trim();
   const curso = document.getElementById('e-curso').value.trim();
@@ -123,23 +115,18 @@ async function editarEstudiante(id) {
   const e = CACHE.estudiantes.find(x => x.id === id);
   if (!e) return;
 
-  const nombre = prompt('Nombre:', e.nombre);
-  if (nombre === null) return;
-  const curso = prompt('Curso:', e.curso || '');
-  if (curso === null) return;
-  const clave = prompt('Clave:', e.clave || '');
-  if (clave === null) return;
-  const apodo = prompt('Apodo:', e.apodo || '');
-  if (apodo === null) return;
-  const bio = prompt('Bio:', e.bio || '');
-  if (bio === null) return;
+  const nombre = prompt('Nombre:', e.nombre); if (nombre === null) return;
+  const curso = prompt('Curso:', e.curso || ''); if (curso === null) return;
+  const clave = prompt('Clave:', e.clave || ''); if (clave === null) return;
+  const apodo = prompt('Apodo:', e.apodo || ''); if (apodo === null) return;
+  const bio = prompt('Bio:', e.bio || ''); if (bio === null) return;
 
   const { error } = await db.from('cfar_estudiantes').update({ nombre, curso, clave, apodo, bio }).eq('id', id);
   if (error) return alert('Error: ' + error.message);
   cargarTodo();
 }
 
-// ============ NOTAS ============
+// NOTAS
 async function agregarNota() {
   const estudiante_id = Number(document.getElementById('n-estudiante').value);
   const materia = document.getElementById('n-materia').value.trim();
@@ -160,18 +147,16 @@ async function editarNota(id) {
   const { data: n } = await db.from('cfar_notas').select('*').eq('id', id).single();
   if (!n) return;
 
-  const materia = prompt('Materia:', n.materia);
-  if (materia === null) return;
-  const nota = prompt('Nota:', n.nota);
-  if (nota === null) return;
-  const privada = confirm('¿Marcar como privada? (Aceptar = sí, Cancelar = no)');
+  const materia = prompt('Materia:', n.materia); if (materia === null) return;
+  const nota = prompt('Nota:', n.nota); if (nota === null) return;
+  const privada = confirm('¿Marcar como privada?');
 
   const { error } = await db.from('cfar_notas').update({ materia, nota: Number(nota), privada }).eq('id', id);
   if (error) return alert('Error: ' + error.message);
   cargarTodo();
 }
 
-// ============ EVALUACIONES ============
+// EVALUACIONES
 async function agregarEvaluacion() {
   const tipo = document.getElementById('ev-tipo').value;
   const titulo = document.getElementById('ev-titulo').value.trim();
@@ -193,16 +178,11 @@ async function editarEvaluacion(id) {
   const { data: ev } = await db.from('cfar_evaluaciones').select('*').eq('id', id).single();
   if (!ev) return;
 
-  const titulo = prompt('Título:', ev.titulo);
-  if (titulo === null) return;
-  const materia = prompt('Materia:', ev.materia || '');
-  if (materia === null) return;
-  const fecha = prompt('Fecha (YYYY-MM-DD):', ev.fecha || '');
-  if (fecha === null) return;
-  const descripcion = prompt('Descripción:', ev.descripcion || '');
-  if (descripcion === null) return;
-  const contenido = prompt('Contenido (tema completo):', ev.contenido || '');
-  if (contenido === null) return;
+  const titulo = prompt('Título:', ev.titulo); if (titulo === null) return;
+  const materia = prompt('Materia:', ev.materia || ''); if (materia === null) return;
+  const fecha = prompt('Fecha (YYYY-MM-DD):', ev.fecha || ''); if (fecha === null) return;
+  const descripcion = prompt('Descripción:', ev.descripcion || ''); if (descripcion === null) return;
+  const contenido = prompt('Contenido:', ev.contenido || ''); if (contenido === null) return;
 
   const { error } = await db.from('cfar_evaluaciones')
     .update({ titulo, materia, fecha: fecha || null, descripcion, contenido })
@@ -211,7 +191,7 @@ async function editarEvaluacion(id) {
   cargarTodo();
 }
 
-// ============ ANUNCIOS ============
+// ANUNCIOS
 async function agregarAnuncio() {
   const titulo = document.getElementById('a-titulo').value.trim();
   const texto = document.getElementById('a-texto').value.trim();
@@ -228,17 +208,42 @@ async function editarAnuncio(id) {
   const { data: a } = await db.from('cfar_anuncios').select('*').eq('id', id).single();
   if (!a) return;
 
-  const titulo = prompt('Título:', a.titulo);
-  if (titulo === null) return;
-  const texto = prompt('Contenido:', a.texto);
-  if (texto === null) return;
+  const titulo = prompt('Título:', a.titulo); if (titulo === null) return;
+  const texto = prompt('Contenido:', a.texto); if (texto === null) return;
 
   const { error } = await db.from('cfar_anuncios').update({ titulo, texto }).eq('id', id);
   if (error) return alert('Error: ' + error.message);
   cargarTodo();
 }
 
-// ============ BORRAR ============
+// DESTACADOS
+async function agregarDestacado() {
+  const nombre = document.getElementById('d-nombre').value.trim();
+  const discord = document.getElementById('d-discord').value.trim();
+  const github = document.getElementById('d-github').value.trim();
+  const twitter = document.getElementById('d-twitter').value.trim();
+  const web = document.getElementById('d-web').value.trim();
+  const frase = document.getElementById('d-frase').value.trim();
+  const corona = document.getElementById('d-corona').checked;
+
+  if (!nombre) return alert('Falta el nombre');
+
+  const { error } = await db.from('cfar_destacados')
+    .upsert({ nombre, discord, github, twitter, web, frase, corona, color: '#3b82f6' }, { onConflict: 'nombre' });
+
+  if (error) return alert('Error: ' + error.message);
+  limpiar(['d-nombre','d-discord','d-github','d-twitter','d-web','d-frase']);
+  cargarTodo();
+}
+
+async function borrarDestacado(id) {
+  if (!confirm('¿Quitar destacado?')) return;
+  const { error } = await db.from('cfar_destacados').delete().eq('id', id);
+  if (error) return alert('Error: ' + error.message);
+  cargarTodo();
+}
+
+// BORRAR
 async function borrar(tabla, id) {
   if (!confirm('¿Eliminar este registro?')) return;
   const { error } = await db.from(tabla).delete().eq('id', id);
@@ -246,9 +251,8 @@ async function borrar(tabla, id) {
   cargarTodo();
 }
 
-// ============ CARGAR TODO ============
+// CARGAR TODO
 async function cargarTodo() {
-  // profesores
   const { data: p } = await db.from('cfar_profesores').select('*').order('id');
   CACHE.profesores = p || [];
   document.getElementById('admin-profes').innerHTML = CACHE.profesores.map(x =>
@@ -261,7 +265,6 @@ async function cargarTodo() {
     </li>`
   ).join('');
 
-  // estudiantes
   const { data: e } = await db.from('cfar_estudiantes').select('*').order('nombre');
   CACHE.estudiantes = e || [];
   document.getElementById('admin-estudiantes').innerHTML = CACHE.estudiantes.map(x =>
@@ -274,17 +277,14 @@ async function cargarTodo() {
     </li>`
   ).join('');
 
-  // select estudiantes
   const select = document.getElementById('n-estudiante');
   select.innerHTML = CACHE.estudiantes.length
     ? CACHE.estudiantes.map(x => `<option value="${x.id}">${x.nombre}</option>`).join('')
     : '<option value="">Sin estudiantes</option>';
 
-  // datalist materias para autocompletado
   const dl = document.getElementById('materias-list');
   if (dl) dl.innerHTML = CACHE.materias.map(m => `<option value="${m}">`).join('');
 
-  // notas
   const { data: n } = await db
     .from('cfar_notas')
     .select('id, materia, nota, privada, cfar_estudiantes(nombre)')
@@ -299,7 +299,6 @@ async function cargarTodo() {
     </li>`
   ).join('');
 
-  // evaluaciones
   const { data: ev } = await db.from('cfar_evaluaciones').select('*').order('id');
   document.getElementById('admin-eval').innerHTML = (ev || []).map(x =>
     `<li>
@@ -311,7 +310,6 @@ async function cargarTodo() {
     </li>`
   ).join('');
 
-  // anuncios
   const { data: a } = await db.from('cfar_anuncios').select('*').order('id', { ascending: false });
   document.getElementById('admin-anuncios').innerHTML = (a || []).map(x =>
     `<li>
@@ -323,7 +321,16 @@ async function cargarTodo() {
     </li>`
   ).join('');
 
-  // contador
+  const { data: d } = await db.from('cfar_destacados').select('*').order('id');
+  document.getElementById('admin-destacados').innerHTML = (d || []).map(x =>
+    `<li>
+      <span>👑 ${x.nombre} ${x.discord ? '· 💬 ' + x.discord : ''}</span>
+      <div class="acciones-item">
+        <button onclick="borrarDestacado(${x.id})">Quitar</button>
+      </div>
+    </li>`
+  ).join('');
+
   const contador = document.getElementById('contador');
   if (contador) {
     contador.innerHTML = `

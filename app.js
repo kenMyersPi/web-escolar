@@ -22,6 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
 const vacio = (msg) => `<div class="vacio">${msg}</div>`;
 const DIAS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
 
+let DESTACADOS = [];
+
 // helpers
 function iniciales(nombre) {
   return (nombre || '?')
@@ -49,13 +51,13 @@ function colorMateria(materia) {
 }
 
 // modal
-function abrirModal(html) {
+function abrirModal(html, claseExtra = '') {
   cerrarModal();
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
   overlay.id = 'modal-global';
   overlay.innerHTML = `
-    <div class="modal">
+    <div class="modal ${claseExtra}">
       <button class="modal-cerrar" onclick="cerrarModal()">✕</button>
       <div class="modal-body">${html}</div>
     </div>`;
@@ -75,6 +77,16 @@ function cerrarModal() {
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') cerrarModal();
 });
+
+// destacados
+async function cargarDestacados() {
+  const { data } = await db.from('cfar_destacados').select('*');
+  DESTACADOS = data || [];
+}
+
+function esDestacado(nombre) {
+  return DESTACADOS.find(d => d.nombre.toLowerCase() === (nombre || '').toLowerCase());
+}
 
 // horario fijo
 const HORARIO_FIJO = [
@@ -111,8 +123,8 @@ const HORARIO_FIJO = [
   { hora: '12:10 - 1:30', clases: {
     Lunes:     { m: 'Física', p: 'Prof. Elizabeth' },
     Martes:    null,
-    Miércoles: { m: 'Física', p: 'Prof. Elizabeth' },
-    Jueves:    null,
+    Miércoles: null,
+    Jueves:    { m: 'Física', p: 'Prof. Elizabeth' },
     Viernes:   { m: 'Castellano', p: 'Prof. Ingrid' }
   }}
 ];
@@ -213,26 +225,38 @@ async function verPerfilProfesor(id) {
 // =================== ESTUDIANTES ===================
 async function cargarEstudiantes() {
   const cont = document.getElementById('lista-estudiantes');
+
+  await cargarDestacados();
+
   const { data, error } = await db.from('cfar_estudiantes').select('id, nombre, curso, apodo').order('nombre');
   if (error) { cont.innerHTML = vacio('Error al cargar los estudiantes.'); return; }
 
-  cont.innerHTML = data.length ? data.map(e => `
-    <div class="card card-click" onclick="verPerfilEstudiante(${e.id})">
-      <div style="display:flex;gap:14px;align-items:center;">
-        <div class="avatar">${iniciales(e.nombre)}</div>
-        <div>
-          <h4 style="margin:0;">${e.nombre}</h4>
-          ${e.apodo ? `<small style="color:var(--primary);font-weight:600;">"${e.apodo}"</small>` : ''}
-          <small>🎓 ${e.curso || '—'}</small>
+  cont.innerHTML = data.length ? data.map(e => {
+    const dest = esDestacado(e.nombre);
+    const claseExtra = dest ? ' destacado' : '';
+    const corona = dest?.corona ? '<span class="corona">👑</span>' : '';
+    const tag = dest ? '<div class="tag-creador">Creador</div>' : '';
+
+    return `
+      <div class="card card-click${claseExtra}" onclick="verPerfilEstudiante(${e.id})">
+        <div style="display:flex;gap:14px;align-items:center;">
+          <div class="avatar">${iniciales(e.nombre)}</div>
+          <div>
+            <h4 style="margin:0;">${e.nombre}${corona}</h4>
+            ${e.apodo ? `<small style="color:var(--primary);font-weight:600;">"${e.apodo}"</small>` : ''}
+            <small>🎓 ${e.curso || '—'}</small>
+            ${tag}
+          </div>
         </div>
-      </div>
-    </div>
-  `).join('') : vacio('Sin estudiantes registrados aún.');
+      </div>`;
+  }).join('') : vacio('Sin estudiantes registrados aún.');
 }
 
 async function verPerfilEstudiante(id) {
   const { data: e } = await db.from('cfar_estudiantes').select('*').eq('id', id).single();
   if (!e) return;
+
+  const dest = esDestacado(e.nombre);
 
   const { data: notas } = await db
     .from('cfar_notas')
@@ -255,15 +279,31 @@ async function verPerfilEstudiante(id) {
       `).join('')}
     </ul>` : '<p style="color:var(--text-muted);">Sin notas registradas aún.</p>';
 
+  const links = [];
+  if (dest?.discord) links.push(`<a class="link-perfil discord" href="https://discord.com/users/${dest.discord}" target="_blank" rel="noopener">💬 Discord</a>`);
+  if (dest?.github)  links.push(`<a class="link-perfil github" href="https://github.com/${dest.github}" target="_blank" rel="noopener">🐙 GitHub</a>`);
+  if (dest?.twitter) links.push(`<a class="link-perfil" href="https://twitter.com/${dest.twitter}" target="_blank" rel="noopener">🐦 Twitter</a>`);
+  if (dest?.web)     links.push(`<a class="link-perfil" href="${dest.web}" target="_blank" rel="noopener">🌐 Web</a>`);
+
   abrirModal(`
+    ${dest ? `
+      <div class="banner-destacado">
+        <span style="font-size:1.1rem;">👑</span>
+        ${dest.frase || 'Usuario destacado'}
+      </div>
+    ` : ''}
+
     <div class="modal-perfil-header">
       <div class="avatar avatar-grande">${iniciales(e.nombre)}</div>
       <div>
-        <h2>${e.nombre}</h2>
+        <h2>${e.nombre}${dest?.corona ? ' <span class="corona">👑</span>' : ''}</h2>
         ${e.apodo ? `<div class="apodo">"${e.apodo}"</div>` : ''}
         <div class="curso">🎓 ${e.curso || '—'}</div>
+        ${dest ? '<div class="tag-creador">Creador de la página</div>' : ''}
       </div>
     </div>
+
+    ${links.length ? `<div class="links-perfil">${links.join('')}</div>` : ''}
 
     ${e.bio ? `
       <h3>📝 Sobre mí</h3>
@@ -280,7 +320,7 @@ async function verPerfilEstudiante(id) {
 
     <h3>📋 Notas registradas</h3>
     ${notasHTML}
-  `);
+  `, dest ? 'modal-galaxia' : '');
 }
 
 // =================== NOTAS ===================

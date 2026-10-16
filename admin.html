@@ -32,18 +32,18 @@
     </header>
 
     <div class="tabs">
-      <button data-tab="tab-profes">Profesores</button>
+      <button class="activo" data-tab="tab-profes">Profesores</button>
       <button data-tab="tab-estudiantes">Estudiantes</button>
       <button data-tab="tab-notas">Notas</button>
       <button data-tab="tab-eval">Proyectos/Exámenes</button>
       <button data-tab="tab-anuncios">Anuncios</button>
+      <button data-tab="tab-destacados">Destacados</button>
     </div>
 
     <div id="contador" class="contador-admin" style="max-width:820px;margin:16px auto 0;"></div>
 
     <datalist id="materias-list"></datalist>
 
-    <!-- PROFESORES -->
     <section id="tab-profes" class="tab activa">
       <div class="form-card">
         <h3>Nuevo profesor</h3>
@@ -59,7 +59,6 @@
       <ul id="admin-profes" class="lista-admin"></ul>
     </section>
 
-    <!-- ESTUDIANTES -->
     <section id="tab-estudiantes" class="tab">
       <div class="form-card">
         <h3>Nuevo estudiante</h3>
@@ -75,7 +74,6 @@
       <ul id="admin-estudiantes" class="lista-admin"></ul>
     </section>
 
-    <!-- NOTAS -->
     <section id="tab-notas" class="tab">
       <div class="form-card">
         <h3>Nueva nota</h3>
@@ -90,7 +88,6 @@
       <ul id="admin-notas" class="lista-admin"></ul>
     </section>
 
-    <!-- EVALUACIONES -->
     <section id="tab-eval" class="tab">
       <div class="form-card">
         <h3>Nuevo proyecto / examen</h3>
@@ -110,7 +107,6 @@
       <ul id="admin-eval" class="lista-admin"></ul>
     </section>
 
-    <!-- ANUNCIOS -->
     <section id="tab-anuncios" class="tab">
       <div class="form-card">
         <h3>Nuevo anuncio</h3>
@@ -119,6 +115,26 @@
         <button onclick="agregarAnuncio()" class="btn-agregar">Publicar anuncio</button>
       </div>
       <ul id="admin-anuncios" class="lista-admin"></ul>
+    </section>
+
+    <section id="tab-destacados" class="tab">
+      <div class="form-card">
+        <h3>Usuario destacado</h3>
+        <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:12px;">
+          El nombre debe coincidir exactamente con el estudiante registrado.
+        </p>
+        <div class="form-grid">
+          <input id="d-nombre" placeholder="Nombre exacto (ej: KenMyers)">
+          <input id="d-discord" placeholder="Usuario de Discord">
+          <input id="d-github" placeholder="Usuario de GitHub">
+          <input id="d-twitter" placeholder="Usuario de Twitter (opcional)">
+          <input id="d-web" placeholder="URL de tu web (opcional)">
+        </div>
+        <input id="d-frase" placeholder="Frase corta (ej: Creador de la página)">
+        <label class="check"><input type="checkbox" id="d-corona" checked> Mostrar coronita 👑</label>
+        <button onclick="agregarDestacado()" class="btn-agregar">Guardar</button>
+      </div>
+      <ul id="admin-destacados" class="lista-admin"></ul>
     </section>
   </div>
 

@@ -123,8 +123,8 @@ const HORARIO_FIJO = [
   { hora: '12:10 - 1:30', clases: {
     Lunes:     { m: 'Física', p: 'Prof. Elizabeth' },
     Martes:    null,
-    Miércoles: null,
-    Jueves:    { m: 'Física', p: 'Prof. Elizabeth' },
+    Miércoles: { m: 'Física', p: 'Prof. Elizabeth' },
+    Jueves:    null,
     Viernes:   { m: 'Castellano', p: 'Prof. Ingrid' }
   }}
 ];

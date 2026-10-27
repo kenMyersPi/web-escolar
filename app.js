@@ -250,12 +250,11 @@ async function abrirEditarPerfil() {
     <div class="form-perfil">
       <h2 style="margin-bottom:15px;color:var(--primary-dark);">Editar Mi Perfil</h2>
       
-      <label>Foto de Perfil (GIF o Imagen)</label>
-      <input type="file" id="edit-pfp" accept="image/*,image/gif">
-      
-      <label>Banner (GIF o Imagen)</label>
-      <input type="file" id="edit-banner" accept="image/*,image/gif">
-      
+     <label>Foto de Perfil (GIF o Imagen)</label>
+<input type="file" id="edit-pfp" accept="image/*" capture="filesystem">
+
+<label>Banner (GIF o Imagen)</label>
+<input type="file" id="edit-banner" accept="image/*" capture="filesystem">
       <label>Apodo / Nickname</label>
       <input type="text" id="edit-apodo" value="${e.apodo || ''}" style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);margin-bottom:10px;font-family:inherit;">
       

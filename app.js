@@ -215,24 +215,38 @@ function cerrarSesionEstudiante() {
 async function subirArchivo(archivo, prefijo) {
   if (!archivo) return null;
   
-  const nombreLimpio = archivo.name.replace(/\s+/g, '_');
-  const nombreFinal = `${prefijo}_${Date.now()}_${nombreLimpio}`;
+  // 1. Limpiamos el nombre para evitar errores con tildes o espacios
+  const nombreLimpio = archivo.name.replace(/[^a-zA-Z0-9.]/g, '_');
+  const ext = nombreLimpio.split('.').pop().toLowerCase();
+  
+  // 2. Validamos el formato
+  if (!['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) {
+    alert('⚠️ Formato no compatible. Sube la foto en JPG, PNG o GIF.');
+    return null;
+  }
 
-  // Subida simple y limpia
+  // 3. Creamos el nombre final
+  const nombreFinal = `${prefijo}_${Date.now()}.${ext}`;
+
+  // 4. Subimos a Supabase forzando el tipo de archivo (esto evita que se corrompa)
   const { data, error } = await db.storage
     .from('cfar_media')
-    .upload(nombreFinal, archivo);
+    .upload(nombreFinal, archivo, { 
+      contentType: archivo.type || 'image/jpeg', // Le dice al servidor "esto es una imagen"
+      cacheControl: '3600',
+      upsert: false
+    });
 
   if (error) {
-    console.error('ERROR AL SUBIR:', error);
-    alert('❌ Supabase rechazó la foto: ' + error.message);
+    console.error('ERROR AL SUBIR DESDE CELULAR:', error);
+    alert('❌ Error al subir: ' + error.message);
     return null;
   }
   
+  // 5. Obtenemos la URL pública
   const { data: urlData } = db.storage.from('cfar_media').getPublicUrl(nombreFinal);
   return urlData.publicUrl;
 }
-
 // =================== EDITAR PERFIL ===================
 async function abrirEditarPerfil() {
   if (!ESTUDIANTE_LOGUEADO) return abrirLogin();

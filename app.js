@@ -295,9 +295,8 @@ async function guardarPerfil() {
   const id = ESTUDIANTE_LOGUEADO.id;
   const btn = document.querySelector('.modal .btn-agregar');
   const textoOriginal = btn.textContent;
-  btn.textContent = 'Subiendo...'; btn.disabled = true;
+  btn.textContent = 'Subiendo foto...'; btn.disabled = true;
 
-  // Detecta si se subió la foto por el botón normal o el de archivos
   const pfpInput1 = document.getElementById('edit-pfp');
   const pfpInput2 = document.getElementById('edit-pfp-2');
   const pfpFile = (pfpInput1.files.length > 0) ? pfpInput1.files[0] : (pfpInput2.files.length > 0 ? pfpInput2.files[0] : null);
@@ -312,16 +311,25 @@ async function guardarPerfil() {
   let pfp_url = ESTUDIANTE_LOGUEADO.pfp_url;
   let banner_url = ESTUDIANTE_LOGUEADO.banner_url;
 
+  // 1. Subir PFP y ESPERAR a que termine
   if (pfpFile) {
     const nuevaPfp = await subirArchivo(pfpFile, 'pfp');
-    if (nuevaPfp) pfp_url = nuevaPfp;
+    if (nuevaPfp) {
+      pfp_url = nuevaPfp;
+    } else {
+      alert('La foto no se pudo subir, pero se guardarán los demás cambios.');
+    }
   }
   
+  // 2. Subir Banner y ESPERAR a que termine
   if (bannerFile) {
     const nuevoBanner = await subirArchivo(bannerFile, 'banner');
-    if (nuevoBanner) banner_url = nuevoBanner;
+    if (nuevoBanner) {
+      banner_url = nuevoBanner;
+    }
   }
 
+  // 3. Guardar en la base de datos (con la URL de la foto)
   const updates = { apodo, bio, color1, color2, pfp_url, banner_url };
   if (nuevaClave) updates.clave = nuevaClave;
 

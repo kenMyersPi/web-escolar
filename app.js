@@ -52,7 +52,7 @@ function colorMateria(materia) {
   return 'default';
 }
 
-// =================== MODAL (Faltaba) ===================
+// =================== MODAL ===================
 function abrirModal(html, claseExtra = '') {
   cerrarModal();
   const overlay = document.createElement('div');
@@ -80,6 +80,7 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') cerrarModal();
 });
 
+// =================== DESTACADOS ===================
 async function cargarDestacados() {
   const { data } = await db.from('cfar_destacados').select('*');
   DESTACADOS = data || [];
@@ -89,7 +90,7 @@ function esDestacado(nombre) {
   return DESTACADOS.find(d => d.nombre.toLowerCase() === (nombre || '').toLowerCase());
 }
 
-// =================== HORARIO (Faltaba) ===================
+// =================== HORARIO ===================
 const HORARIO_FIJO = [
   { hora: '7:00 - 8:20', clases: {
     Lunes:     { m: 'Castellano', p: 'Prof. Ingrid' },
@@ -124,8 +125,8 @@ const HORARIO_FIJO = [
   { hora: '12:10 - 1:30', clases: {
     Lunes:     { m: 'Física', p: 'Prof. Elizabeth' },
     Martes:    null,
-    Miércoles: null,
-    Jueves:    { m: 'Física', p: 'Prof. Elizabeth' },
+    Miércoles: { m: 'Física', p: 'Prof. Elizabeth' },
+    Jueves:    null,
     Viernes:   { m: 'Castellano', p: 'Prof. Ingrid' }
   }}
 ];
@@ -213,16 +214,31 @@ function cerrarSesionEstudiante() {
 // =================== SUBIR FOTOS ===================
 async function subirArchivo(archivo, prefijo) {
   if (!archivo) return null;
-  const ext = archivo.name.split('.').pop();
-  const nombre = `${prefijo}_${Date.now()}.${ext}`;
   
-  const { data, error } = await db.storage.from('cfar_media').upload(nombre, archivo);
+  const nombreLimpio = archivo.name.replace(/\s+/g, '_');
+  const ext = nombreLimpio.split('.').pop().toLowerCase();
+  
+  if (!['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) {
+    alert('Solo se permiten imágenes (jpg, png, gif, webp)');
+    return null;
+  }
+
+  const nombreFinal = `${prefijo}_${Date.now()}_${nombreLimpio}`;
+  console.log('Subiendo archivo:', nombreFinal);
+
+  const { data, error } = await db.storage
+    .from('cfar_media')
+    .upload(nombreFinal, archivo, { cacheControl: '3600', upsert: true });
+
   if (error) {
-    alert('Error subiendo imagen: ' + error.message);
+    console.error('Error de Supabase Storage:', error);
+    alert('Error al subir la imagen: ' + error.message);
     return null;
   }
   
-  const { data: urlData } = db.storage.from('cfar_media').getPublicUrl(nombre);
+  const { data: urlData } = db.storage.from('cfar_media').getPublicUrl(nombreFinal);
+  console.log('URL generada:', urlData.publicUrl);
+  
   return urlData.publicUrl;
 }
 
@@ -265,6 +281,7 @@ async function abrirEditarPerfil() {
 async function guardarPerfil() {
   const id = ESTUDIANTE_LOGUEADO.id;
   const btn = document.querySelector('.modal .btn-agregar');
+  const textoOriginal = btn.textContent;
   btn.textContent = 'Subiendo...'; btn.disabled = true;
 
   const pfpFile = document.getElementById('edit-pfp').files[0];
@@ -286,7 +303,12 @@ async function guardarPerfil() {
 
   const { error } = await db.from('cfar_estudiantes').update(updates).eq('id', id);
 
-  if (error) { alert('Error: ' + error.message); btn.disabled = false; return; }
+  if (error) { 
+    alert('Error: ' + error.message); 
+    btn.textContent = textoOriginal;
+    btn.disabled = false; 
+    return; 
+  }
 
   const { data } = await db.from('cfar_estudiantes').select('*').eq('id', id).single();
   ESTUDIANTE_LOGUEADO = data;
@@ -310,11 +332,14 @@ async function cargarEstudiantes() {
     const dest = esDestacado(e.nombre);
     const grad = `linear-gradient(135deg, ${e.color1 || '#1e3a8a'}, ${e.color2 || '#3b82f6'})`;
     
+    // URL de respaldo por si la imagen falla
+    const urlRespaldo = `https://ui-avatars.com/api/?name=${encodeURIComponent(e.nombre)}&background=random&color=fff&size=128`;
+
     return `
       <div class="card card-click ${dest ? 'destacado' : ''}" onclick="verPerfilEstudiante(${e.id})">
         <div style="display:flex;gap:14px;align-items:center;">
           ${e.pfp_url 
-            ? `<img src="${e.pfp_url}" class="pfp-img" style="border-color:${e.color1};">` 
+            ? `<img src="${e.pfp_url}" class="pfp-img" style="border-color:${e.color1};" onerror="this.src='${urlRespaldo}';">` 
             : `<div class="avatar" style="background:${grad}">${iniciales(e.nombre)}</div>`}
           
           <div>
@@ -348,13 +373,15 @@ async function verPerfilEstudiante(id) {
     </li>
   `).join('');
 
+  const urlRespaldo = `https://ui-avatars.com/api/?name=${encodeURIComponent(e.nombre)}&background=random&color=fff&size=256`;
+
   abrirModal(`
-    ${e.banner_url ? `<img src="${e.banner_url}" class="banner-img">` : ''}
+    ${e.banner_url ? `<img src="${e.banner_url}" class="banner-img" style="object-fit: cover; object-position: center;" onerror="this.style.display='none';">` : ''}
     ${dest ? `<div class="banner-destacado" style="margin-top:10px;">👑 ${dest.frase || 'Usuario destacado'}</div>` : ''}
 
     <div class="modal-perfil-header" style="margin-top:${e.banner_url ? '15px' : '0'};">
       ${e.pfp_url 
-        ? `<img src="${e.pfp_url}" class="pfp-img grande" style="box-shadow:0 0 20px ${e.color1};">` 
+        ? `<img src="${e.pfp_url}" class="pfp-img grande" style="box-shadow:0 0 20px ${e.color1};" onerror="this.src='${urlRespaldo}';">` 
         : `<div class="avatar avatar-grande" style="background:${grad}">${iniciales(e.nombre)}</div>`}
       
       <div>

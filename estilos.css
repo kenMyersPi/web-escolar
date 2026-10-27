@@ -1301,3 +1301,85 @@ body {
   .contador-admin { background: linear-gradient(135deg, #1e293b, #1e40af); color: #e0e7ff; }
   .contador-admin span { background: #0f172a; color: #cbd5e1; }
 }
+
+
+/* =================== PERFILES PERSONALIZADOS =================== */
+
+.pfp-img {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border);
+}
+
+.pfp-img.grande {
+  width: 96px; height: 96px;
+  border: 3px solid rgba(255,255,255,0.3);
+}
+
+.banner-img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 12px 12px 0 0;
+  margin: -30px -30px 15px -30px; /* ajusta al modal */
+  width: calc(100% + 60px);
+}
+
+/* botón de login/editar estudiante */
+.btn-user {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.85rem;
+  transition: 0.2s;
+  margin-left: 10px;
+}
+.btn-user:hover { background: var(--primary-dark); }
+
+/* caja de login flotante */
+.modal-login input {
+  width: 100%; padding: 12px; margin-bottom: 10px;
+  border: 1.5px solid var(--border); border-radius: 8px; font-family: inherit;
+}
+
+/* muro de comentarios */
+.muro-lista {
+  list-style: none; margin-top: 15px;
+  max-height: 200px; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.muro-item {
+  background: rgba(255,255,255,0.1);
+  padding: 10px 14px; border-radius: 10px;
+  font-size: 0.85rem;
+}
+.muro-item strong { color: var(--primary-light); display: block; margin-bottom: 2px; }
+
+/* badges / medallas */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: rgba(59,130,246,0.2);
+  color: #bfdbfe;
+  padding: 4px 8px; border-radius: 6px;
+  font-size: 0.7rem; font-weight: 700;
+  border: 1px solid rgba(59,130,246,0.3);
+  margin-right: 4px; margin-top: 6px;
+}
+
+/* formulario de edición de perfil */
+.form-perfil label {
+  display: block; font-size: 0.8rem; color: var(--text-muted);
+  margin: 10px 0 4px; font-weight: 600;
+}
+.form-perfil input[type="file"] {
+  background: #f1f5f9; padding: 8px; border-radius: 8px; width: 100%;
+}
+.form-perfil input[type="color"] {
+  height: 40px; padding: 0; border: 1px solid var(--border); border-radius: 8px; cursor: pointer;
+}

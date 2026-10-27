@@ -215,27 +215,44 @@ function cerrarSesionEstudiante() {
 async function subirArchivo(archivo, prefijo) {
   if (!archivo) return null;
   
-  // Si el archivo pesa 0, es porque el celular falló al leerlo
   if (archivo.size === 0) {
-    alert('⚠️ El archivo está vacío. Intenta con otra foto.');
+    alert('⚠️ El archivo está vacío (0 KB). Intenta con otra foto o usa el administrador de archivos.');
     return null;
   }
 
-  // Limpiamos el nombre (sin espacios)
-  const ext = archivo.name.split('.').pop().toLowerCase();
+  // Si el archivo no tiene nombre (típico de la galería), le inventamos uno
+  const ext = archivo.name ? archivo.name.split('.').pop().toLowerCase() : 'jpg';
   const nombreFinal = `${prefijo}_${Date.now()}.${ext}`;
 
-  // Subimos el archivo DIRECTO, pero forzando el contentType
+  // Preparamos los datos
+  const formData = new FormData();
+  formData.append('file', archivo);
+  formData.append('cacheControl', '3600');
+
+  // Subimos usando FormData
   const { data, error } = await db.storage
     .from('cfar_media')
     .upload(nombreFinal, archivo, { 
-      contentType: archivo.type || 'image/jpeg' // Obliga a Supabase a aceptarlo como imagen
+      contentType: archivo.type || 'image/jpeg',
+      upsert: false
     });
 
   if (error) {
     console.error('ERROR AL SUBIR:', error);
-    alert('❌ Error al subir la foto: ' + error.message);
-    return null;
+    // Si falla, probamos un método de respaldo
+    try {
+      const { data: dataFallback, error: errorFallback } = await db.storage
+        .from('cfar_media')
+        .upload(`fallback_${nombreFinal}`, archivo);
+      
+      if (errorFallback) throw errorFallback;
+      
+      const { data: urlData } = db.storage.from('cfar_media').getPublicUrl(dataFallback.path);
+      return urlData.publicUrl;
+    } catch (e) {
+      alert('❌ Error: ' + e.message);
+      return null;
+    }
   }
   
   const { data: urlData } = db.storage.from('cfar_media').getPublicUrl(nombreFinal);
@@ -251,10 +268,18 @@ async function abrirEditarPerfil() {
       <h2 style="margin-bottom:15px;color:var(--primary-dark);">Editar Mi Perfil</h2>
 
       <label>Foto de Perfil (GIF o Imagen)</label>
-<input type="file" id="edit-pfp" accept="image/png, image/jpeg, image/gif, image/webp">
+      <input type="file" id="edit-pfp" accept="image/*">
 
-<label>Banner (GIF o Imagen)</label>
-<input type="file" id="edit-banner" accept="image/png, image/jpeg, image/gif, image/webp">
+      <label>Banner (GIF o Imagen)</label>
+      <input type="file" id="edit-banner" accept="image/*">
+      
+      <div style="background:#eff6ff; padding:10px; border-radius:8px; margin-top:10px; margin-bottom: 15px; border:1px solid #bfdbfe;">
+        <p style="font-size:0.8rem; color:#1e40af; margin-bottom:8px;">¿El celular abre la galería y falla? Usa este botón:</p>
+        <input type="file" id="edit-pfp-2" accept="image/*" style="display:none;">
+        <label for="edit-pfp-2" style="display:inline-block; background:#3b82f6; color:white; padding:8px 16px; border-radius:8px; cursor:pointer; font-size:0.85rem;">
+          📁 Buscar Foto en Archivos
+        </label>
+      </div>
 
       <label>Apodo / Nickname</label>
       <input type="text" id="edit-apodo" value="${e.apodo || ''}" style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);margin-bottom:10px;font-family:inherit;">
@@ -283,7 +308,11 @@ async function guardarPerfil() {
   const textoOriginal = btn.textContent;
   btn.textContent = 'Subiendo...'; btn.disabled = true;
 
-  const pfpFile = document.getElementById('edit-pfp').files[0];
+  // EL TRUCO ESTÁ AQUÍ: Revisamos si usaron el input normal o el botón azul
+  const pfpInput1 = document.getElementById('edit-pfp');
+  const pfpInput2 = document.getElementById('edit-pfp-2');
+  const pfpFile = (pfpInput1.files.length > 0) ? pfpInput1.files[0] : (pfpInput2.files.length > 0 ? pfpInput2.files[0] : null);
+
   const bannerFile = document.getElementById('edit-banner').files[0];
   const apodo = document.getElementById('edit-apodo').value.trim();
   const bio = document.getElementById('edit-bio').value.trim();

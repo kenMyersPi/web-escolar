@@ -215,26 +215,36 @@ function cerrarSesionEstudiante() {
 async function subirArchivo(archivo, prefijo) {
   if (!archivo) return null;
   
-  // Forzamos la extensión a .jpg para que Windows y la PC nunca fallen
-  const nombreFinal = `${prefijo}_${Date.now()}.jpg`;
+  try {
+    // 1. Comprimimos y estandarizamos la imagen (esto arregla los archivos raros de Android)
+    const opciones = {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 800,
+      useWebWorker: true
+    };
+    const archivoComprimido = await imageCompression(archivo, opciones);
+    
+    // 2. Le ponemos un nombre limpio (siempre .jpg)
+    const nombreFinal = `${prefijo}_${Date.now()}.jpg`;
 
-  const { data, error } = await db.storage
-    .from('cfar_media')
-    .upload(nombreFinal, archivo, { 
-      contentType: archivo.type || 'image/jpeg', // Le decimos a Supabase que es una imagen
-      cacheControl: '3600',
-      upsert: false
-    });
+    // 3. Lo subimos a Supabase
+    const { data, error } = await db.storage
+      .from('cfar_media')
+      .upload(nombreFinal, archivoComprimido, { 
+        contentType: 'image/jpeg',
+        upsert: false
+      });
 
-  if (error) {
-    console.error('ERROR AL SUBIR:', error);
-    alert('❌ Error de Supabase: ' + error.message);
+    if (error) throw error;
+    
+    const { data: urlData } = db.storage.from('cfar_media').getPublicUrl(nombreFinal);
+    return urlData.publicUrl + '?t=' + Date.now();
+    
+  } catch (error) {
+    console.error('Error al procesar la imagen:', error);
+    alert('❌ Error al procesar la foto: ' + error.message);
     return null;
   }
-  
-  const { data: urlData } = db.storage.from('cfar_media').getPublicUrl(nombreFinal);
-  // Retornamos el link con un ?t= para que la PC no guarde la foto en caché
-  return urlData.publicUrl + '?t=' + Date.now();
 }
 
 // =================== EDITAR PERFIL ===================

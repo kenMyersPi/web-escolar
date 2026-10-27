@@ -216,25 +216,22 @@ async function subirArchivo(archivo, prefijo) {
   if (!archivo) return null;
   
   const nombreLimpio = archivo.name.replace(/\s+/g, '_');
-  const ext = nombreLimpio.split('.').pop().toLowerCase();
-  
-  if (!['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) {
-    alert('Solo se permiten imágenes (jpg, png, gif, webp)');
-    return null;
-  }
-
   const nombreFinal = `${prefijo}_${Date.now()}_${nombreLimpio}`;
-  console.log('Subiendo archivo:', nombreFinal);
 
+  // Subida ultra simple
   const { data, error } = await db.storage
     .from('cfar_media')
-    .upload(nombreFinal, archivo, { cacheControl: '3600', upsert: true });
+    .upload(nombreFinal, archivo);
 
   if (error) {
-    console.error('Error de Supabase Storage:', error);
-    alert('Error al subir la imagen: ' + error.message);
+    console.error('ERROR AL SUBIR:', error);
+    alert('❌ Supabase rechazó la foto: ' + error.message);
     return null;
   }
+  
+  const { data: urlData } = db.storage.from('cfar_media').getPublicUrl(nombreFinal);
+  return urlData.publicUrl;
+}
   
   const { data: urlData } = db.storage.from('cfar_media').getPublicUrl(nombreFinal);
   console.log('URL generada:', urlData.publicUrl);

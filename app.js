@@ -295,7 +295,7 @@ async function guardarPerfil() {
   const id = ESTUDIANTE_LOGUEADO.id;
   const btn = document.querySelector('.modal .btn-agregar');
   const textoOriginal = btn.textContent;
-  btn.textContent = 'Subiendo foto...'; btn.disabled = true;
+  btn.textContent = 'Subiendo...'; btn.disabled = true;
 
   const pfpInput1 = document.getElementById('edit-pfp');
   const pfpInput2 = document.getElementById('edit-pfp-2');
@@ -311,47 +311,44 @@ async function guardarPerfil() {
   let pfp_url = ESTUDIANTE_LOGUEADO.pfp_url;
   let banner_url = ESTUDIANTE_LOGUEADO.banner_url;
 
-  // 1. Subir PFP y ESPERAR a que termine
-  if (pfpFile) {
-    const nuevaPfp = await subirArchivo(pfpFile, 'pfp');
-    if (nuevaPfp) {
-      pfp_url = nuevaPfp;
-    } else {
-      alert('La foto no se pudo subir, pero se guardarán los demás cambios.');
+  try {
+    if (pfpFile) {
+      btn.textContent = 'Subiendo Foto...';
+      const nuevaPfp = await subirArchivo(pfpFile, 'pfp');
+      if (nuevaPfp) pfp_url = nuevaPfp;
     }
-  }
-  
-  // 2. Subir Banner y ESPERAR a que termine
-  if (bannerFile) {
-    const nuevoBanner = await subirArchivo(bannerFile, 'banner');
-    if (nuevoBanner) {
-      banner_url = nuevoBanner;
+    
+    if (bannerFile) {
+      btn.textContent = 'Subiendo Banner...';
+      const nuevoBanner = await subirArchivo(bannerFile, 'banner');
+      if (nuevoBanner) banner_url = nuevoBanner;
     }
-  }
 
-  // 3. Guardar en la base de datos (con la URL de la foto)
-  const updates = { apodo, bio, color1, color2, pfp_url, banner_url };
-  if (nuevaClave) updates.clave = nuevaClave;
+    btn.textContent = 'Guardando...';
+    const updates = { apodo, bio, color1, color2, pfp_url, banner_url };
+    if (nuevaClave) updates.clave = nuevaClave;
 
-  const { error } = await db.from('cfar_estudiantes').update(updates).eq('id', id);
+    const { error } = await db.from('cfar_estudiantes').update(updates).eq('id', id);
+    if (error) throw error;
 
-  if (error) { 
-    alert('Error: ' + error.message); 
+    const { data } = await db.from('cfar_estudiantes').select('*').eq('id', id).single();
+    ESTUDIANTE_LOGUEADO = data;
+    sessionStorage.setItem('cfar_user', JSON.stringify(data));
+    
+    cerrarModal();
+    actualizarUIUsuario();
+    cargarEstudiantes(); 
+    alert('✅ ¡Perfil actualizado con éxito!');
+
+  } catch (error) {
+    // ESTO ES LO NUEVO: Si algo falla, saltará una alerta en tu celular
+    console.error(error);
+    alert('❌ ERROR EN EL CELULAR:\n' + (error.message || JSON.stringify(error)));
+  } finally {
     btn.textContent = textoOriginal;
-    btn.disabled = false; 
-    return; 
+    btn.disabled = false;
   }
-
-  const { data } = await db.from('cfar_estudiantes').select('*').eq('id', id).single();
-  ESTUDIANTE_LOGUEADO = data;
-  sessionStorage.setItem('cfar_user', JSON.stringify(data));
-  
-  cerrarModal();
-  actualizarUIUsuario();
-  cargarEstudiantes(); 
-  alert('¡Perfil actualizado!');
 }
-
 // =================== ESTUDIANTES ===================
 async function cargarEstudiantes() {
   const cont = document.getElementById('lista-estudiantes');

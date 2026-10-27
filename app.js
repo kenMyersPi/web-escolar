@@ -215,37 +215,50 @@ function cerrarSesionEstudiante() {
 async function subirArchivo(archivo, prefijo) {
   if (!archivo) return null;
   
-  // 1. Limpiamos el nombre para evitar errores con tildes o espacios
-  const nombreLimpio = archivo.name.replace(/[^a-zA-Z0-9.]/g, '_');
-  const ext = nombreLimpio.split('.').pop().toLowerCase();
-  
-  // 2. Validamos el formato
-  if (!['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) {
-    alert('⚠️ Formato no compatible. Sube la foto en JPG, PNG o GIF.');
+  // 1. Validar peso (si el celular manda un archivo de 0 bytes, lo frenamos)
+  if (archivo.size === 0) {
+    alert('⚠️ La foto está vacía. Intenta con otra imagen.');
     return null;
   }
 
-  // 3. Creamos el nombre final
+  // 2. Forzamos el nombre a minúsculas y sin espacios
+  const ext = archivo.name.split('.').pop().toLowerCase();
   const nombreFinal = `${prefijo}_${Date.now()}.${ext}`;
 
-  // 4. Subimos a Supabase forzando el tipo de archivo (esto evita que se corrompa)
-  const { data, error } = await db.storage
-    .from('cfar_media')
-    .upload(nombreFinal, archivo, { 
-      contentType: archivo.type || 'image/jpeg', // Le dice al servidor "esto es una imagen"
-      cacheControl: '3600',
-      upsert: false
-    });
+  // 3. TRUCO: Convertir la imagen a un formato que TODOS lean (Blob)
+  // Esto obliga al celular a procesar la imagen antes de enviarla.
+  const reader = new FileReader();
+  
+  const promesa = new Promise((resolve, reject) => {
+    reader.onload = async (e) => {
+      const arrayBuffer = e.target.result;
+      
+      // Subimos el archivo usando el ArrayBuffer en lugar del archivo crudo
+      const { data, error } = await db.storage
+        .from('cfar_media')
+        .upload(nombreFinal, arrayBuffer, { 
+          contentType: archivo.type || 'image/jpeg',
+          upsert: false
+        });
 
-  if (error) {
-    console.error('ERROR AL SUBIR DESDE CELULAR:', error);
-    alert('❌ Error al subir: ' + error.message);
+      if (error) {
+        reject(error);
+      } else {
+        const { data: urlData } = db.storage.from('cfar_media').getPublicUrl(nombreFinal);
+        resolve(urlData.publicUrl);
+      }
+    };
+    reader.onerror = (error) => reject(error);
+    reader.readAsArrayBuffer(archivo); // Leemos el archivo como datos puros
+  });
+
+  try {
+    return await promesa;
+  } catch (error) {
+    console.error('ERROR AL SUBIR:', error);
+    alert('❌ Error al subir la foto: ' + error.message);
     return null;
   }
-  
-  // 5. Obtenemos la URL pública
-  const { data: urlData } = db.storage.from('cfar_media').getPublicUrl(nombreFinal);
-  return urlData.publicUrl;
 }
 // =================== EDITAR PERFIL ===================
 async function abrirEditarPerfil() {

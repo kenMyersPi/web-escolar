@@ -238,19 +238,18 @@ async function agregarDestacado() {
   const github = document.getElementById('d-github').value.trim();
   const twitter = document.getElementById('d-twitter').value.trim();
   const web = document.getElementById('d-web').value.trim();
+  const audio_url = document.getElementById('d-audio').value.trim();
   const frase = document.getElementById('d-frase').value.trim();
   const corona = document.getElementById('d-corona').checked;
-  const audio_url = document.getElementById('d-audio') ? document.getElementById('d-audio').value.trim() : null;
 
   if (!nombre) return alert('Falta el nombre');
 
-  const payload = { nombre, discord, github, twitter, web, frase, corona, color: '#3b82f6' };
-  if (audio_url !== null) payload.audio_url = audio_url;
+  const payload = { nombre, discord, github, twitter, web, frase, corona, audio_url, color: '#3b82f6' };
 
   const { error } = await db.from('cfar_destacados').upsert(payload, { onConflict: 'nombre' });
 
   if (error) return alert('Error: ' + error.message);
-  limpiar(['d-nombre','d-discord','d-github','d-twitter','d-web','d-frase']);
+  limpiar(['d-nombre','d-discord','d-github','d-twitter','d-web','d-audio','d-frase']);
   cargarTodo();
 }
 
@@ -269,8 +268,9 @@ async function borrar(tabla, id) {
   cargarTodo();
 }
 
-// =================== CARGAR TODO ===================
+// =================== CARGAR TODO (Renderizado) ===================
 async function cargarTodo() {
+  // 1. Profesores
   const { data: p } = await db.from('cfar_profesores').select('*').order('id');
   CACHE.profesores = p || [];
   document.getElementById('admin-profes').innerHTML = CACHE.profesores.map(x =>
@@ -283,6 +283,7 @@ async function cargarTodo() {
     </li>`
   ).join('');
 
+  // 2. Estudiantes
   const { data: e } = await db.from('cfar_estudiantes').select('*').order('nombre');
   CACHE.estudiantes = e || [];
   document.getElementById('admin-estudiantes').innerHTML = CACHE.estudiantes.map(x =>
@@ -296,14 +297,17 @@ async function cargarTodo() {
     </li>`
   ).join('');
 
+  // 3. Selector de estudiantes (para notas)
   const select = document.getElementById('n-estudiante');
   select.innerHTML = CACHE.estudiantes.length
     ? CACHE.estudiantes.map(x => `<option value="${x.id}">${x.nombre}</option>`).join('')
     : '<option value="">Sin estudiantes</option>';
 
+  // 4. Datalist de materias (autocompletado)
   const dl = document.getElementById('materias-list');
   if (dl) dl.innerHTML = CACHE.materias.map(m => `<option value="${m}">`).join('');
 
+  // 5. Notas
   const { data: n } = await db
     .from('cfar_notas')
     .select('id, materia, nota, privada, cfar_estudiantes(nombre)')
@@ -318,6 +322,7 @@ async function cargarTodo() {
     </li>`
   ).join('');
 
+  // 6. Evaluaciones
   const { data: ev } = await db.from('cfar_evaluaciones').select('*').order('id');
   document.getElementById('admin-eval').innerHTML = (ev || []).map(x =>
     `<li>
@@ -329,6 +334,7 @@ async function cargarTodo() {
     </li>`
   ).join('');
 
+  // 7. Anuncios
   const { data: a } = await db.from('cfar_anuncios').select('*').order('id', { ascending: false });
   document.getElementById('admin-anuncios').innerHTML = (a || []).map(x =>
     `<li>
@@ -340,6 +346,7 @@ async function cargarTodo() {
     </li>`
   ).join('');
 
+  // 8. Destacados
   const { data: d } = await db.from('cfar_destacados').select('*').order('id');
   document.getElementById('admin-destacados').innerHTML = (d || []).map(x =>
     `<li>
@@ -350,6 +357,7 @@ async function cargarTodo() {
     </li>`
   ).join('');
 
+  // 9. Contador
   const contador = document.getElementById('contador');
   if (contador) {
     contador.innerHTML = `
@@ -361,6 +369,7 @@ async function cargarTodo() {
   }
 }
 
+// Limpiar inputs
 function limpiar(ids) {
   ids.forEach(id => {
     const el = document.getElementById(id);

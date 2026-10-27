@@ -218,7 +218,7 @@ async function subirArchivo(archivo, prefijo) {
   const nombreLimpio = archivo.name.replace(/\s+/g, '_');
   const nombreFinal = `${prefijo}_${Date.now()}_${nombreLimpio}`;
 
-  // Subida ultra simple
+  // Subida simple y limpia
   const { data, error } = await db.storage
     .from('cfar_media')
     .upload(nombreFinal, archivo);
@@ -230,12 +230,6 @@ async function subirArchivo(archivo, prefijo) {
   }
   
   const { data: urlData } = db.storage.from('cfar_media').getPublicUrl(nombreFinal);
-  return urlData.publicUrl;
-}
-  
-  const { data: urlData } = db.storage.from('cfar_media').getPublicUrl(nombreFinal);
-  console.log('URL generada:', urlData.publicUrl);
-  
   return urlData.publicUrl;
 }
 
@@ -292,8 +286,15 @@ async function guardarPerfil() {
   let pfp_url = ESTUDIANTE_LOGUEADO.pfp_url;
   let banner_url = ESTUDIANTE_LOGUEADO.banner_url;
 
-  if (pfpFile) pfp_url = await subirArchivo(pfpFile, 'pfp');
-  if (bannerFile) banner_url = await subirArchivo(bannerFile, 'banner');
+  if (pfpFile) {
+    const nuevaPfp = await subirArchivo(pfpFile, 'pfp');
+    if (nuevaPfp) pfp_url = nuevaPfp;
+  }
+  
+  if (bannerFile) {
+    const nuevoBanner = await subirArchivo(bannerFile, 'banner');
+    if (nuevoBanner) banner_url = nuevoBanner;
+  }
 
   const updates = { apodo, bio, color1, color2, pfp_url, banner_url };
   if (nuevaClave) updates.clave = nuevaClave;
@@ -328,8 +329,6 @@ async function cargarEstudiantes() {
   cont.innerHTML = data.length ? data.map(e => {
     const dest = esDestacado(e.nombre);
     const grad = `linear-gradient(135deg, ${e.color1 || '#1e3a8a'}, ${e.color2 || '#3b82f6'})`;
-    
-    // URL de respaldo por si la imagen falla
     const urlRespaldo = `https://ui-avatars.com/api/?name=${encodeURIComponent(e.nombre)}&background=random&color=fff&size=128`;
 
     return `

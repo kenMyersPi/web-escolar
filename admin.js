@@ -62,7 +62,7 @@ async function cerrarSesion() {
   location.reload();
 }
 
-// PROFESORES
+// =================== PROFESORES ===================
 async function agregarProfesor() {
   const nombre = document.getElementById('p-nombre').value.trim();
   const materia = document.getElementById('p-materia').value.trim();
@@ -94,7 +94,7 @@ async function editarProfesor(id) {
   cargarTodo();
 }
 
-// ESTUDIANTES
+// =================== ESTUDIANTES ===================
 async function agregarEstudiante() {
   const nombre = document.getElementById('e-nombre').value.trim();
   const curso = document.getElementById('e-curso').value.trim();
@@ -126,7 +126,22 @@ async function editarEstudiante(id) {
   cargarTodo();
 }
 
-// NOTAS
+async function editarMedallas(id) {
+  const e = CACHE.estudiantes.find(x => x.id === id);
+  if (!e) return;
+
+  const actuales = (e.badges || []).join(', ');
+  const input = prompt('Escribe las medallas separadas por coma (ej: Gamer, Mejor Promedio, Actor):', actuales);
+  if (input === null) return;
+
+  const arr = input.split(',').map(s => s.trim()).filter(Boolean);
+  const { error } = await db.from('cfar_estudiantes').update({ badges: arr }).eq('id', id);
+  
+  if (error) return alert('Error: ' + error.message);
+  cargarTodo();
+}
+
+// =================== NOTAS ===================
 async function agregarNota() {
   const estudiante_id = Number(document.getElementById('n-estudiante').value);
   const materia = document.getElementById('n-materia').value.trim();
@@ -156,7 +171,7 @@ async function editarNota(id) {
   cargarTodo();
 }
 
-// EVALUACIONES
+// =================== EVALUACIONES ===================
 async function agregarEvaluacion() {
   const tipo = document.getElementById('ev-tipo').value;
   const titulo = document.getElementById('ev-titulo').value.trim();
@@ -191,7 +206,7 @@ async function editarEvaluacion(id) {
   cargarTodo();
 }
 
-// ANUNCIOS
+// =================== ANUNCIOS ===================
 async function agregarAnuncio() {
   const titulo = document.getElementById('a-titulo').value.trim();
   const texto = document.getElementById('a-texto').value.trim();
@@ -216,7 +231,7 @@ async function editarAnuncio(id) {
   cargarTodo();
 }
 
-// DESTACADOS
+// =================== DESTACADOS ===================
 async function agregarDestacado() {
   const nombre = document.getElementById('d-nombre').value.trim();
   const discord = document.getElementById('d-discord').value.trim();
@@ -225,11 +240,14 @@ async function agregarDestacado() {
   const web = document.getElementById('d-web').value.trim();
   const frase = document.getElementById('d-frase').value.trim();
   const corona = document.getElementById('d-corona').checked;
+  const audio_url = document.getElementById('d-audio') ? document.getElementById('d-audio').value.trim() : null;
 
   if (!nombre) return alert('Falta el nombre');
 
-  const { error } = await db.from('cfar_destacados')
-    .upsert({ nombre, discord, github, twitter, web, frase, corona, color: '#3b82f6' }, { onConflict: 'nombre' });
+  const payload = { nombre, discord, github, twitter, web, frase, corona, color: '#3b82f6' };
+  if (audio_url !== null) payload.audio_url = audio_url;
+
+  const { error } = await db.from('cfar_destacados').upsert(payload, { onConflict: 'nombre' });
 
   if (error) return alert('Error: ' + error.message);
   limpiar(['d-nombre','d-discord','d-github','d-twitter','d-web','d-frase']);
@@ -243,7 +261,7 @@ async function borrarDestacado(id) {
   cargarTodo();
 }
 
-// BORRAR
+// =================== BORRAR GENERAL ===================
 async function borrar(tabla, id) {
   if (!confirm('¿Eliminar este registro?')) return;
   const { error } = await db.from(tabla).delete().eq('id', id);
@@ -251,7 +269,7 @@ async function borrar(tabla, id) {
   cargarTodo();
 }
 
-// CARGAR TODO
+// =================== CARGAR TODO ===================
 async function cargarTodo() {
   const { data: p } = await db.from('cfar_profesores').select('*').order('id');
   CACHE.profesores = p || [];
@@ -271,7 +289,8 @@ async function cargarTodo() {
     `<li>
       <span>${x.nombre}${x.apodo ? ` "${x.apodo}"` : ''} · ${x.curso || '—'}</span>
       <div class="acciones-item">
-        <button class="btn-editar" onclick="editarEstudiante(${x.id})">Editar</button>
+        <button class="btn-editar" onclick="editarEstudiante(${x.id})">Perfil</button>
+        <button class="btn-editar" style="background:#fef08a!important;color:#854d0e!important;" onclick="editarMedallas(${x.id})">Medallas</button>
         <button onclick="borrar('cfar_estudiantes', ${x.id})">Eliminar</button>
       </div>
     </li>`

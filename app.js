@@ -4,7 +4,6 @@ let ESTUDIANTE_LOGUEADO = null;
 let DESTACADOS = [];
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Revisar si el estudiante ya estaba logueado
   const sesion = sessionStorage.getItem('cfar_user');
   if (sesion) {
     ESTUDIANTE_LOGUEADO = JSON.parse(sesion);
@@ -211,40 +210,50 @@ function cerrarSesionEstudiante() {
   location.reload();
 }
 
-// =================== SUBIR FOTOS ===================
-async function subirArchivo(archivo, prefijo) {
+// =================== SUBIR FOTOS (MÉTODO BASE64) ===================
+// Este método lee la foto en el celular y la convierte a texto puro. Es infalible.
+async function subirArchivoBase64(archivo, prefijo) {
   if (!archivo) return null;
-  
-  try {
-    // 1. Comprimimos y estandarizamos la imagen (esto arregla los archivos raros de Android)
-    const opciones = {
-      maxSizeMB: 1,
-      maxWidthOrHeight: 800,
-      useWebWorker: true
+
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    
+    reader.onload = async (e) => {
+      try {
+        // Aquí ya tenemos la imagen como texto
+        const base64Data = e.target.result; 
+        
+        // Convertimos el texto a un archivo real para que Supabase lo acepte
+        const res = await fetch(base64Data);
+        const blob = await res.blob();
+        
+        const nombreFinal = `${prefijo}_${Date.now()}.jpg`;
+        
+        const { data, error } = await db.storage
+          .from('cfar_media')
+          .upload(nombreFinal, blob, { contentType: 'image/jpeg', upsert: false });
+
+        if (error) {
+          alert("Error de Supabase: " + error.message);
+          resolve(null);
+        } else {
+          const { data: urlData } = db.storage.from('cfar_media').getPublicUrl(nombreFinal);
+          resolve(urlData.publicUrl + '?t=' + Date.now());
+        }
+      } catch (err) {
+        alert("Error procesando imagen: " + err.message);
+        resolve(null);
+      }
     };
-    const archivoComprimido = await imageCompression(archivo, opciones);
-    
-    // 2. Le ponemos un nombre limpio (siempre .jpg)
-    const nombreFinal = `${prefijo}_${Date.now()}.jpg`;
 
-    // 3. Lo subimos a Supabase
-    const { data, error } = await db.storage
-      .from('cfar_media')
-      .upload(nombreFinal, archivoComprimido, { 
-        contentType: 'image/jpeg',
-        upsert: false
-      });
+    reader.onerror = () => {
+      alert("El celular no pudo leer la imagen.");
+      resolve(null);
+    };
 
-    if (error) throw error;
-    
-    const { data: urlData } = db.storage.from('cfar_media').getPublicUrl(nombreFinal);
-    return urlData.publicUrl + '?t=' + Date.now();
-    
-  } catch (error) {
-    console.error('Error al procesar la imagen:', error);
-    alert('❌ Error al procesar la foto: ' + error.message);
-    return null;
-  }
+    // Leemos el archivo como Base64
+    reader.readAsDataURL(archivo); 
+  });
 }
 
 // =================== EDITAR PERFIL ===================
@@ -262,14 +271,6 @@ async function abrirEditarPerfil() {
       <label>Banner (GIF o Imagen)</label>
       <input type="file" id="edit-banner" accept="image/*">
       
-      <div style="background:#eff6ff; padding:10px; border-radius:8px; margin-top:10px; margin-bottom: 15px; border:1px solid #bfdbfe;">
-        <p style="font-size:0.8rem; color:#1e40af; margin-bottom:8px;">¿La galería falla? Usa este botón:</p>
-        <input type="file" id="edit-pfp-2" accept="image/*" style="display:none;">
-        <label for="edit-pfp-2" style="display:inline-block; background:#3b82f6; color:white; padding:8px 16px; border-radius:8px; cursor:pointer; font-size:0.85rem;">
-          📁 Buscar en Archivos
-        </label>
-      </div>
-
       <label>Apodo / Nickname</label>
       <input type="text" id="edit-apodo" value="${e.apodo || ''}" style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);margin-bottom:10px;font-family:inherit;">
       
@@ -295,12 +296,9 @@ async function guardarPerfil() {
   const id = ESTUDIANTE_LOGUEADO.id;
   const btn = document.querySelector('.modal .btn-agregar');
   const textoOriginal = btn.textContent;
-  btn.textContent = 'Subiendo...'; btn.disabled = true;
+  btn.textContent = 'Guardando...'; btn.disabled = true;
 
-  const pfpInput1 = document.getElementById('edit-pfp');
-  const pfpInput2 = document.getElementById('edit-pfp-2');
-  const pfpFile = (pfpInput1.files.length > 0) ? pfpInput1.files[0] : (pfpInput2.files.length > 0 ? pfpInput2.files[0] : null);
-
+  const pfpFile = document.getElementById('edit-pfp').files[0];
   const bannerFile = document.getElementById('edit-banner').files[0];
   const apodo = document.getElementById('edit-apodo').value.trim();
   const bio = document.getElementById('edit-bio').value.trim();
@@ -311,44 +309,42 @@ async function guardarPerfil() {
   let pfp_url = ESTUDIANTE_LOGUEADO.pfp_url;
   let banner_url = ESTUDIANTE_LOGUEADO.banner_url;
 
-  try {
-    if (pfpFile) {
-      btn.textContent = 'Subiendo Foto...';
-      const nuevaPfp = await subirArchivo(pfpFile, 'pfp');
-      if (nuevaPfp) pfp_url = nuevaPfp;
-    }
-    
-    if (bannerFile) {
-      btn.textContent = 'Subiendo Banner...';
-      const nuevoBanner = await subirArchivo(bannerFile, 'banner');
-      if (nuevoBanner) banner_url = nuevoBanner;
-    }
-
-    btn.textContent = 'Guardando...';
-    const updates = { apodo, bio, color1, color2, pfp_url, banner_url };
-    if (nuevaClave) updates.clave = nuevaClave;
-
-    const { error } = await db.from('cfar_estudiantes').update(updates).eq('id', id);
-    if (error) throw error;
-
-    const { data } = await db.from('cfar_estudiantes').select('*').eq('id', id).single();
-    ESTUDIANTE_LOGUEADO = data;
-    sessionStorage.setItem('cfar_user', JSON.stringify(data));
-    
-    cerrarModal();
-    actualizarUIUsuario();
-    cargarEstudiantes(); 
-    alert('✅ ¡Perfil actualizado con éxito!');
-
-  } catch (error) {
-    // ESTO ES LO NUEVO: Si algo falla, saltará una alerta en tu celular
-    console.error(error);
-    alert('❌ ERROR EN EL CELULAR:\n' + (error.message || JSON.stringify(error)));
-  } finally {
-    btn.textContent = textoOriginal;
-    btn.disabled = false;
+  // Usamos el método Base64 (a prueba de celulares)
+  if (pfpFile) {
+    btn.textContent = 'Subiendo Foto...';
+    const nuevaPfp = await subirArchivoBase64(pfpFile, 'pfp');
+    if (nuevaPfp) pfp_url = nuevaPfp;
   }
+  
+  if (bannerFile) {
+    btn.textContent = 'Subiendo Banner...';
+    const nuevoBanner = await subirArchivoBase64(bannerFile, 'banner');
+    if (nuevoBanner) banner_url = nuevoBanner;
+  }
+
+  btn.textContent = 'Guardando...';
+  const updates = { apodo, bio, color1, color2, pfp_url, banner_url };
+  if (nuevaClave) updates.clave = nuevaClave;
+
+  const { error } = await db.from('cfar_estudiantes').update(updates).eq('id', id);
+
+  if (error) { 
+    alert('Error al guardar en base de datos: ' + error.message); 
+    btn.textContent = textoOriginal;
+    btn.disabled = false; 
+    return; 
+  }
+
+  const { data } = await db.from('cfar_estudiantes').select('*').eq('id', id).single();
+  ESTUDIANTE_LOGUEADO = data;
+  sessionStorage.setItem('cfar_user', JSON.stringify(data));
+  
+  cerrarModal();
+  actualizarUIUsuario();
+  cargarEstudiantes(); 
+  alert('¡Perfil actualizado!');
 }
+
 // =================== ESTUDIANTES ===================
 async function cargarEstudiantes() {
   const cont = document.getElementById('lista-estudiantes');
@@ -360,13 +356,15 @@ async function cargarEstudiantes() {
   cont.innerHTML = data.length ? data.map(e => {
     const dest = esDestacado(e.nombre);
     const grad = `linear-gradient(135deg, ${e.color1 || '#1e3a8a'}, ${e.color2 || '#3b82f6'})`;
-    const urlRespaldo = `https://ui-avatars.com/api/?name=${encodeURIComponent(e.nombre)}&background=random&color=fff&size=128`;
+    
+    // Limpiamos la URL para que HTML no falle
+    let pfpLimpia = e.pfp_url ? e.pfp_url.split('?')[0] : null;
 
     return `
       <div class="card card-click ${dest ? 'destacado' : ''}" onclick="verPerfilEstudiante(${e.id})">
         <div style="display:flex;gap:14px;align-items:center;">
-          ${e.pfp_url 
-            ? `<img src="${e.pfp_url}" class="pfp-img" style="border-color:${e.color1};" onerror="this.src='${urlRespaldo}';">` 
+          ${pfpLimpia 
+            ? `<img src="${pfpLimpia}" class="pfp-img" style="border-color:${e.color1}; display:block !important; width:64px; height:64px; object-fit:cover;">` 
             : `<div class="avatar" style="background:${grad}">${iniciales(e.nombre)}</div>`}
           
           <div>
@@ -400,15 +398,16 @@ async function verPerfilEstudiante(id) {
     </li>
   `).join('');
 
-  const urlRespaldo = `https://ui-avatars.com/api/?name=${encodeURIComponent(e.nombre)}&background=random&color=fff&size=256`;
+  let pfpLimpia = e.pfp_url ? e.pfp_url.split('?')[0] : null;
+  let bannerLimpio = e.banner_url ? e.banner_url.split('?')[0] : null;
 
   abrirModal(`
-    ${e.banner_url ? `<img src="${e.banner_url}" class="banner-img" style="object-fit: cover; object-position: center;" onerror="this.style.display='none';">` : ''}
+    ${bannerLimpio ? `<img src="${bannerLimpio}" class="banner-img" style="object-fit: cover; object-position: center; display:block !important; width:100%; height:120px;">` : ''}
     ${dest ? `<div class="banner-destacado" style="margin-top:10px;">👑 ${dest.frase || 'Usuario destacado'}</div>` : ''}
 
-    <div class="modal-perfil-header" style="margin-top:${e.banner_url ? '15px' : '0'};">
-      ${e.pfp_url 
-        ? `<img src="${e.pfp_url}" class="pfp-img grande" style="box-shadow:0 0 20px ${e.color1};" onerror="this.src='${urlRespaldo}';">` 
+    <div class="modal-perfil-header" style="margin-top:${bannerLimpio ? '15px' : '0'};">
+      ${pfpLimpia 
+        ? `<img src="${pfpLimpia}" class="pfp-img grande" style="box-shadow:0 0 20px ${e.color1}; display:block !important; width:96px; height:96px; object-fit:cover;">` 
         : `<div class="avatar avatar-grande" style="background:${grad}">${iniciales(e.nombre)}</div>`}
       
       <div>

@@ -215,49 +215,28 @@ function cerrarSesionEstudiante() {
 async function subirArchivo(archivo, prefijo) {
   if (!archivo) return null;
   
-  if (archivo.size === 0) {
-    alert('⚠️ El archivo está vacío (0 KB). Intenta con otra foto o usa el administrador de archivos.');
-    return null;
-  }
+  // Forzamos la extensión a .jpg para que Windows y la PC nunca fallen
+  const nombreFinal = `${prefijo}_${Date.now()}.jpg`;
 
-  // Si el archivo no tiene nombre (típico de la galería), le inventamos uno
-  const ext = archivo.name ? archivo.name.split('.').pop().toLowerCase() : 'jpg';
-  const nombreFinal = `${prefijo}_${Date.now()}.${ext}`;
-
-  // Preparamos los datos
-  const formData = new FormData();
-  formData.append('file', archivo);
-  formData.append('cacheControl', '3600');
-
-  // Subimos usando FormData
   const { data, error } = await db.storage
     .from('cfar_media')
     .upload(nombreFinal, archivo, { 
-      contentType: archivo.type || 'image/jpeg',
+      contentType: archivo.type || 'image/jpeg', // Le decimos a Supabase que es una imagen
+      cacheControl: '3600',
       upsert: false
     });
 
   if (error) {
     console.error('ERROR AL SUBIR:', error);
-    // Si falla, probamos un método de respaldo
-    try {
-      const { data: dataFallback, error: errorFallback } = await db.storage
-        .from('cfar_media')
-        .upload(`fallback_${nombreFinal}`, archivo);
-      
-      if (errorFallback) throw errorFallback;
-      
-      const { data: urlData } = db.storage.from('cfar_media').getPublicUrl(dataFallback.path);
-      return urlData.publicUrl;
-    } catch (e) {
-      alert('❌ Error: ' + e.message);
-      return null;
-    }
+    alert('❌ Error de Supabase: ' + error.message);
+    return null;
   }
   
   const { data: urlData } = db.storage.from('cfar_media').getPublicUrl(nombreFinal);
-  return urlData.publicUrl;
+  // Retornamos el link con un ?t= para que la PC no guarde la foto en caché
+  return urlData.publicUrl + '?t=' + Date.now();
 }
+
 // =================== EDITAR PERFIL ===================
 async function abrirEditarPerfil() {
   if (!ESTUDIANTE_LOGUEADO) return abrirLogin();
@@ -274,10 +253,10 @@ async function abrirEditarPerfil() {
       <input type="file" id="edit-banner" accept="image/*">
       
       <div style="background:#eff6ff; padding:10px; border-radius:8px; margin-top:10px; margin-bottom: 15px; border:1px solid #bfdbfe;">
-        <p style="font-size:0.8rem; color:#1e40af; margin-bottom:8px;">¿El celular abre la galería y falla? Usa este botón:</p>
+        <p style="font-size:0.8rem; color:#1e40af; margin-bottom:8px;">¿La galería falla? Usa este botón:</p>
         <input type="file" id="edit-pfp-2" accept="image/*" style="display:none;">
         <label for="edit-pfp-2" style="display:inline-block; background:#3b82f6; color:white; padding:8px 16px; border-radius:8px; cursor:pointer; font-size:0.85rem;">
-          📁 Buscar Foto en Archivos
+          📁 Buscar en Archivos
         </label>
       </div>
 
@@ -308,7 +287,7 @@ async function guardarPerfil() {
   const textoOriginal = btn.textContent;
   btn.textContent = 'Subiendo...'; btn.disabled = true;
 
-  // EL TRUCO ESTÁ AQUÍ: Revisamos si usaron el input normal o el botón azul
+  // Detecta si se subió la foto por el botón normal o el de archivos
   const pfpInput1 = document.getElementById('edit-pfp');
   const pfpInput2 = document.getElementById('edit-pfp-2');
   const pfpFile = (pfpInput1.files.length > 0) ? pfpInput1.files[0] : (pfpInput2.files.length > 0 ? pfpInput2.files[0] : null);

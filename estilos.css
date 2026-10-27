@@ -1304,28 +1304,34 @@ body {
 
 
 /* =================== PERFILES PERSONALIZADOS =================== */
-
+/* =================== IMAGENES DE PERFIL =================== */
 .pfp-img {
-  width: 64px; height: 64px;
+  width: 64px; 
+  height: 64px;
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid var(--border);
+  display: block !important; /* Fuerza visualización */
+  flex-shrink: 0;
+  background-color: #e2e8f0;
 }
 
 .pfp-img.grande {
-  width: 96px; height: 96px;
+  width: 96px; 
+  height: 96px;
   border: 3px solid rgba(255,255,255,0.3);
+  display: block !important;
 }
 
 .banner-img {
-  width: 100%;
+  width: calc(100% + 60px); /* Se sale del padding del modal */
   height: 120px;
   object-fit: cover;
+  object-position: center;
   border-radius: 12px 12px 0 0;
-  margin: -30px -30px 15px -30px; /* ajusta al modal */
-  width: calc(100% + 60px);
+  margin: -30px -30px 15px -30px; 
+  display: block;
 }
-
 /* botón de login/editar estudiante */
 .btn-user {
   background: var(--primary);

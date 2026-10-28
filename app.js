@@ -417,22 +417,23 @@ async function verPerfilEstudiante(id) {
   let pfpLimpia = e.pfp_url ? e.pfp_url.split('?')[0] : null;
   let bannerLimpio = e.banner_url ? e.banner_url.split('?')[0] : null;
 
-  abrirModal(`
-    ${bannerLimpio ? `
-      <div style="width: 100%; max-height: 160px; overflow: hidden; border-radius: 18px 18px 0 0; margin-bottom: 15px;">
-        <img src="${bannerLimpio}" style="width: 100%; height: 160px; object-fit: cover; object-position: center; display: block;">
-      </div>
-    ` : ''}
-    
-    ${dest ? `<div class="banner-destacado" style="margin-top:${bannerLimpio ? '0' : '10px'};">👑 ${dest.frase || 'Usuario destacado'}</div>` : ''}
+  // Si hay banner, no ponemos el margen negativo en el header
+  const margenHeader = bannerLimpio ? 'margin-top: -30px;' : 'margin-top: 15px;';
 
-    <div class="modal-perfil-header" style="margin-top:${bannerLimpio ? '10px' : '0'};">
+  abrirModal(`
+    <!-- BANNER (Si existe) -->
+    ${bannerLimpio ? `<img src="${bannerLimpio}" class="banner-img">` : ''}
+    
+    ${dest ? `<div class="banner-destacado" style="margin-top:${bannerLimpio ? '-10px' : '10px'}; position:relative; z-index:3;">👑 ${dest.frase || 'Usuario destacado'}</div>` : ''}
+
+    <!-- HEADER DEL PERFIL (Foto y Nombre) -->
+    <div class="modal-perfil-header" style="${margenHeader}">
       ${pfpLimpia 
         ? `<img src="${pfpLimpia}" class="pfp-img grande" style="box-shadow:0 0 20px ${e.color1}; display:block !important; width:96px; height:96px; object-fit:cover;">` 
         : `<div class="avatar avatar-grande" style="background:${grad}">${iniciales(e.nombre)}</div>`}
       
-      <div>
-        <h2 style="color:${e.color2}">${e.nombre}${dest?.corona ? ' <span class="corona">👑</span>' : ''}</h2>
+      <div style="padding-bottom: 5px;">
+        <h2 style="color:${e.color2}; margin:0;">${e.nombre}${dest?.corona ? ' <span class="corona">👑</span>' : ''}</h2>
         ${e.apodo ? `<div class="apodo" style="color:${e.color2}">"${e.apodo}"</div>` : ''}
         <div class="curso">🎓 ${e.curso || '—'}</div>
         
@@ -440,16 +441,18 @@ async function verPerfilEstudiante(id) {
       </div>
     </div>
 
+    <!-- AUDIO (Si existe) -->
     ${dest?.audio_url ? `
-      <audio controls style="width:100%;margin:15px 0; height:35px;">
+      <audio controls style="width:100%;margin:0 0 15px 0; height:35px;">
         <source src="${dest.audio_url}">
       </audio>
     ` : ''}
 
-    <div style="display:flex;gap:10px;margin-top:15px;flex-wrap:wrap;">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
       <div class="bio" style="flex:1;">${e.bio || 'Este estudiante no ha escrito su biografía.'}</div>
     </div>
 
+    <!-- PROMEDIO -->
     ${promedio ? `
       <h3>📊 Promedio general</h3>
       <div class="promedio-big" style="background:${grad}">
@@ -458,6 +461,7 @@ async function verPerfilEstudiante(id) {
       </div>
     ` : ''}
 
+    <!-- MURO -->
     <h3>💬 Muro (Sugerencias / Mensajes)</h3>
     <div style="display:flex;gap:8px;margin-bottom:10px;">
       <input type="text" id="muro-nombre" placeholder="Tu nombre" style="width:30%;padding:8px;border-radius:6px;border:1px solid #ccc;font-family:inherit;">
@@ -467,7 +471,6 @@ async function verPerfilEstudiante(id) {
     <ul class="muro-lista">${muroHTML || '<p style="font-size:0.8rem;color:#888;">Sin mensajes aún.</p>'}</ul>
   `, dest ? 'modal-galaxia' : '');
 }
-
 async function enviarMuro(estudianteId) {
   const autor = document.getElementById('muro-nombre').value.trim();
   const msg = document.getElementById('muro-msg').value.trim();

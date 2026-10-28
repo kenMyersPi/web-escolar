@@ -52,13 +52,17 @@ function colorMateria(materia) {
 }
 
 // =================== MODAL ===================
-function abrirModal(html, claseExtra = '') {
+function abrirModal(html, claseExtra = '', fondoGradiente = '') {
   cerrarModal();
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
   overlay.id = 'modal-global';
+  
+  // Si hay degradado, lo aplicamos al fondo del modal
+  const estiloFondo = fondoGradiente ? `style="background: ${fondoGradiente};"` : '';
+
   overlay.innerHTML = `
-    <div class="modal ${claseExtra}">
+    <div class="modal ${claseExtra}" ${estiloFondo}>
       <button class="modal-cerrar" onclick="cerrarModal()">✕</button>
       <div class="modal-body">${html}</div>
     </div>`;
@@ -68,7 +72,6 @@ function abrirModal(html, claseExtra = '') {
   document.body.appendChild(overlay);
   document.body.style.overflow = 'hidden';
 }
-
 function cerrarModal() {
   const m = document.getElementById('modal-global');
   if (m) m.remove();
@@ -403,6 +406,8 @@ async function verPerfilEstudiante(id) {
   if (!e) return;
 
   const dest = esDestacado(e.nombre);
+  
+  // Creamos el degradado
   const grad = `linear-gradient(135deg, ${e.color1 || '#1e3a8a'}, ${e.color2 || '#3b82f6'})`;
 
   const { data: notas } = await db.from('cfar_notas').select('materia, nota, privada').eq('estudiante_id', id);
@@ -422,31 +427,27 @@ async function verPerfilEstudiante(id) {
   let pfpLimpia = e.pfp_url ? e.pfp_url.split('?')[0] : null;
   let bannerLimpio = e.banner_url ? e.banner_url.split('?')[0] : null;
 
-  // Si hay banner, no ponemos el margen negativo en el header
   const margenHeader = bannerLimpio ? 'margin-top: -30px;' : 'margin-top: 15px;';
 
   abrirModal(`
-    <!-- BANNER (Si existe) -->
     ${bannerLimpio ? `<img src="${bannerLimpio}" class="banner-img">` : ''}
     
     ${dest ? `<div class="banner-destacado" style="margin-top:${bannerLimpio ? '-10px' : '10px'}; position:relative; z-index:3;">👑 ${dest.frase || 'Usuario destacado'}</div>` : ''}
 
-    <!-- HEADER DEL PERFIL (Foto y Nombre) -->
     <div class="modal-perfil-header" style="${margenHeader}">
       ${pfpLimpia 
         ? `<img src="${pfpLimpia}" class="pfp-img grande" style="box-shadow:0 0 20px ${e.color1}; display:block !important; width:96px; height:96px; object-fit:cover;">` 
-        : `<div class="avatar avatar-grande" style="background:${grad}">${iniciales(e.nombre)}</div>`}
+        : `<div class="avatar avatar-grande" style="background:rgba(0,0,0,0.3)">${iniciales(e.nombre)}</div>`}
       
       <div style="padding-bottom: 5px;">
-        <h2 style="color:${e.color2}; margin:0;">${e.nombre}${dest?.corona ? ' <span class="corona">👑</span>' : ''}</h2>
-        ${e.apodo ? `<div class="apodo" style="color:${e.color2}">"${e.apodo}"</div>` : ''}
-        <div class="curso">🎓 ${e.curso || '—'}</div>
+        <h2 style="color: white; margin:0; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${e.nombre}${dest?.corona ? ' <span class="corona">👑</span>' : ''}</h2>
+        ${e.apodo ? `<div class="apodo" style="color: rgba(255,255,255,0.9); text-shadow: 0 1px 2px rgba(0,0,0,0.5);">"${e.apodo}"</div>` : ''}
+        <div class="curso" style="color: rgba(255,255,255,0.8);">🎓 ${e.curso || '—'}</div>
         
-        ${e.badges && e.badges.length ? `<div style="margin-top:8px;">${e.badges.map(b => `<span class="badge">🏅 ${b}</span>`).join('')}</div>` : ''}
+        ${e.badges && e.badges.length ? `<div style="margin-top:8px;">${e.badges.map(b => `<span class="badge" style="background:rgba(0,0,0,0.4); border-color:rgba(255,255,255,0.3); color:white;">🏅 ${b}</span>`).join('')}</div>` : ''}
       </div>
     </div>
 
-    <!-- AUDIO (Si existe) -->
     ${dest?.audio_url ? `
       <audio controls style="width:100%;margin:0 0 15px 0; height:35px;">
         <source src="${dest.audio_url}">
@@ -454,28 +455,29 @@ async function verPerfilEstudiante(id) {
     ` : ''}
 
     <div style="display:flex;gap:10px;flex-wrap:wrap;">
-      <div class="bio" style="flex:1;">${e.bio || 'Este estudiante no ha escrito su biografía.'}</div>
+      <div class="bio" style="flex:1; background: rgba(0,0,0,0.3); color: white; border-left-color: rgba(255,255,255,0.5);">${e.bio || 'Este estudiante no ha escrito su biografía.'}</div>
     </div>
 
-    <!-- PROMEDIO -->
     ${promedio ? `
-      <h3>📊 Promedio general</h3>
-      <div class="promedio-big" style="background:${grad}">
+      <h3 style="color:white;">📊 Promedio general</h3>
+      <div class="promedio-big" style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px);">
         <div class="num">${promedio}</div>
         <div class="label">${lista.length} materias</div>
       </div>
     ` : ''}
 
-    <!-- MURO -->
-    <h3>💬 Muro (Sugerencias / Mensajes)</h3>
+    <h3 style="color:white;">💬 Muro (Sugerencias / Mensajes)</h3>
     <div style="display:flex;gap:8px;margin-bottom:10px;">
-      <input type="text" id="muro-nombre" placeholder="Tu nombre" style="width:30%;padding:8px;border-radius:6px;border:1px solid #ccc;font-family:inherit;">
-      <input type="text" id="muro-msg" placeholder="Escribe un mensaje..." style="flex:1;padding:8px;border-radius:6px;border:1px solid #ccc;font-family:inherit;">
-      <button class="btn-agregar" style="margin:0;" onclick="enviarMuro(${e.id})">Enviar</button>
+      <input type="text" id="muro-nombre" placeholder="Tu nombre" style="width:30%;padding:8px;border-radius:6px;border:none;background:rgba(255,255,255,0.9);">
+      <input type="text" id="muro-msg" placeholder="Escribe un mensaje..." style="flex:1;padding:8px;border-radius:6px;border:none;background:rgba(255,255,255,0.9);">
+      <button class="btn-agregar" style="margin:0; background:rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.3);" onclick="enviarMuro(${e.id})">Enviar</button>
     </div>
-    <ul class="muro-lista">${muroHTML || '<p style="font-size:0.8rem;color:#888;">Sin mensajes aún.</p>'}</ul>
-  `, dest ? 'modal-galaxia' : '');
+    <ul class="muro-lista">
+      ${muroHTML ? muroHTML : '<p style="font-size:0.8rem;color:rgba(255,255,255,0.6);">Sin mensajes aún.</p>'}
+    </ul>
+  `, dest ? 'modal-galaxia' : '', grad);
 }
+
 async function enviarMuro(estudianteId) {
   const autor = document.getElementById('muro-nombre').value.trim();
   const msg = document.getElementById('muro-msg').value.trim();

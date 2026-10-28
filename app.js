@@ -369,24 +369,29 @@ async function cargarEstudiantes() {
 
     return `
       <div class="card card-click ${dest ? 'destacado' : ''}" 
-           style="background: ${grad}; color: ${textoColor};" 
+           style="background: ${grad}; color: ${textoColor}; padding: 0; overflow: hidden;" 
            onclick="verPerfilEstudiante(${e.id})">
         
+        <!-- Banner en la Card -->
         ${bannerLimpio ? `
-          <div style="margin: -22px -22px 15px -22px; overflow:hidden; border-radius: 14px 14px 0 0;">
-            <img src="${bannerLimpio}" style="width:100%; height:80px; object-fit:cover; transition: transform 0.5s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+          <div style="width:100%; height:80px; overflow:hidden;">
+            <img src="${bannerLimpio}" style="width:100%; height:100%; object-fit:cover; transition: transform 0.5s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
           </div>
         ` : ''}
 
-        <div style="display:flex;gap:14px;align-items:center;">
-          ${pfpLimpia 
-            ? `<img src="${pfpLimpia}" class="pfp-img" style="border-color:${textoColor}; display:block !important; width:64px; height:64px; object-fit:cover;">` 
-            : `<div class="avatar" style="background:rgba(255,255,255,0.2); color:${textoColor}; border:2px solid ${textoColor};">${iniciales(e.nombre)}</div>`}
-          
-          <div>
-            <h4 style="margin:0; color:${textoColor};">${e.nombre}${dest?.corona ? '<span class="corona">👑</span>' : ''}</h4>
-            ${e.apodo ? `<small style="color:${subTextoColor};font-weight:600;">"${e.apodo}"</small>` : ''}
-            <small style="color:${subTextoColor};">🎓 ${e.curso || '—'}</small>
+        <!-- Contenido de la Card con padding -->
+        <div style="padding: 15px 20px 20px 20px; ${bannerLimpio ? 'margin-top: -30px;' : ''}">
+          <div style="display:flex;gap:14px;align-items:flex-end; position:relative; z-index:2;">
+            
+            ${pfpLimpia 
+              ? `<img src="${pfpLimpia}" class="pfp-img" style="border: 3px solid ${textoColor}; display:block !important; width:64px; height:64px; object-fit:cover; background: #fff;">` 
+              : `<div class="avatar" style="background:rgba(0,0,0,0.3); color:${textoColor}; border:3px solid ${textoColor};">${iniciales(e.nombre)}</div>`}
+            
+            <div style="padding-bottom: 5px;">
+              <h4 style="margin:0; color:${textoColor}; font-size: 1.1rem;">${e.nombre}${dest?.corona ? '<span class="corona">👑</span>' : ''}</h4>
+              ${e.apodo ? `<small style="color:${subTextoColor};font-weight:600; display:block;">"${e.apodo}"</small>` : ''}
+              <small style="color:${subTextoColor};">🎓 ${e.curso || '—'}</small>
+            </div>
           </div>
         </div>
       </div>`;

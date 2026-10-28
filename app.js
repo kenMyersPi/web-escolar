@@ -210,8 +210,7 @@ function cerrarSesionEstudiante() {
   location.reload();
 }
 
-// =================== SUBIR FOTOS (MÉTODO BASE64) ===================
-// Este método lee la foto en el celular y la convierte a texto puro. Es infalible.
+// =================== SUBIR FOTOS (BASE64) ===================
 async function subirArchivoBase64(archivo, prefijo) {
   if (!archivo) return null;
 
@@ -220,10 +219,7 @@ async function subirArchivoBase64(archivo, prefijo) {
     
     reader.onload = async (e) => {
       try {
-        // Aquí ya tenemos la imagen como texto
         const base64Data = e.target.result; 
-        
-        // Convertimos el texto a un archivo real para que Supabase lo acepte
         const res = await fetch(base64Data);
         const blob = await res.blob();
         
@@ -251,7 +247,6 @@ async function subirArchivoBase64(archivo, prefijo) {
       resolve(null);
     };
 
-    // Leemos el archivo como Base64
     reader.readAsDataURL(archivo); 
   });
 }
@@ -265,10 +260,10 @@ async function abrirEditarPerfil() {
     <div class="form-perfil">
       <h2 style="margin-bottom:15px;color:var(--primary-dark);">Editar Mi Perfil</h2>
 
-      <label>Foto de Perfil (GIF o Imagen)</label>
+      <label>Foto de Perfil</label>
       <input type="file" id="edit-pfp" accept="image/*">
 
-      <label>Banner (GIF o Imagen)</label>
+      <label>Banner Animado (GIF)</label>
       <input type="file" id="edit-banner" accept="image/*">
       
       <label>Apodo / Nickname</label>
@@ -277,11 +272,19 @@ async function abrirEditarPerfil() {
       <label>Bio / Sobre mí</label>
       <textarea id="edit-bio" style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);min-height:80px;margin-bottom:10px;font-family:inherit;">${e.bio || ''}</textarea>
       
-      <label>Color 1 (Izquierda)</label>
-      <input type="color" id="edit-color1" value="${e.color1 || '#1e3a8a'}" style="width:100%;margin-bottom:10px;">
-      
-      <label>Color 2 (Derecha)</label>
-      <input type="color" id="edit-color2" value="${e.color2 || '#3b82f6'}" style="width:100%;margin-bottom:10px;">
+      <div style="background:#eff6ff; padding:10px; border-radius:8px; margin-bottom:10px; border:1px solid #bfdbfe;">
+        <p style="font-size:0.85rem; color:#1e40af; font-weight:600; margin-bottom:8px;">🎨 Colores de tu Perfil (Degradado)</p>
+        <div style="display:flex; gap:10px;">
+          <div style="flex:1;">
+            <label style="font-size:0.75rem; margin:0 0 4px 0;">Color 1</label>
+            <input type="color" id="edit-color1" value="${e.color1 || '#1e3a8a'}" style="width:100%; cursor:pointer;">
+          </div>
+          <div style="flex:1;">
+            <label style="font-size:0.75rem; margin:0 0 4px 0;">Color 2</label>
+            <input type="color" id="edit-color2" value="${e.color2 || '#3b82f6'}" style="width:100%; cursor:pointer;">
+          </div>
+        </div>
+      </div>
       
       <label>Nueva Clave (dejar vacío si no quieres cambiarla)</label>
       <input type="password" id="edit-clave" placeholder="Nueva contraseña" style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);margin-bottom:15px;font-family:inherit;">
@@ -309,7 +312,6 @@ async function guardarPerfil() {
   let pfp_url = ESTUDIANTE_LOGUEADO.pfp_url;
   let banner_url = ESTUDIANTE_LOGUEADO.banner_url;
 
-  // Usamos el método Base64 (a prueba de celulares)
   if (pfpFile) {
     btn.textContent = 'Subiendo Foto...';
     const nuevaPfp = await subirArchivoBase64(pfpFile, 'pfp');
@@ -355,22 +357,36 @@ async function cargarEstudiantes() {
 
   cont.innerHTML = data.length ? data.map(e => {
     const dest = esDestacado(e.nombre);
-    const grad = `linear-gradient(135deg, ${e.color1 || '#1e3a8a'}, ${e.color2 || '#3b82f6'})`;
     
-    // Limpiamos la URL para que HTML no falle
+    // Degradado para toda la tarjeta
+    const grad = `linear-gradient(135deg, ${e.color1 || '#1e3a8a'}, ${e.color2 || '#3b82f6'})`;
     let pfpLimpia = e.pfp_url ? e.pfp_url.split('?')[0] : null;
+    let bannerLimpio = e.banner_url ? e.banner_url.split('?')[0] : null;
+
+    // Si tiene colores personalizados, el texto es blanco
+    const textoColor = e.color1 ? '#ffffff' : 'var(--text)';
+    const subTextoColor = e.color1 ? 'rgba(255,255,255,0.8)' : 'var(--text-muted)';
 
     return `
-      <div class="card card-click ${dest ? 'destacado' : ''}" onclick="verPerfilEstudiante(${e.id})">
+      <div class="card card-click ${dest ? 'destacado' : ''}" 
+           style="background: ${grad}; color: ${textoColor};" 
+           onclick="verPerfilEstudiante(${e.id})">
+        
+        ${bannerLimpio ? `
+          <div style="margin: -22px -22px 15px -22px; overflow:hidden; border-radius: 14px 14px 0 0;">
+            <img src="${bannerLimpio}" style="width:100%; height:80px; object-fit:cover; transition: transform 0.5s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+          </div>
+        ` : ''}
+
         <div style="display:flex;gap:14px;align-items:center;">
           ${pfpLimpia 
-            ? `<img src="${pfpLimpia}" class="pfp-img" style="border-color:${e.color1}; display:block !important; width:64px; height:64px; object-fit:cover;">` 
-            : `<div class="avatar" style="background:${grad}">${iniciales(e.nombre)}</div>`}
+            ? `<img src="${pfpLimpia}" class="pfp-img" style="border-color:${textoColor}; display:block !important; width:64px; height:64px; object-fit:cover;">` 
+            : `<div class="avatar" style="background:rgba(255,255,255,0.2); color:${textoColor}; border:2px solid ${textoColor};">${iniciales(e.nombre)}</div>`}
           
           <div>
-            <h4 style="margin:0;">${e.nombre}${dest?.corona ? '<span class="corona">👑</span>' : ''}</h4>
-            ${e.apodo ? `<small style="color:${e.color2};font-weight:600;">"${e.apodo}"</small>` : ''}
-            <small>🎓 ${e.curso || '—'}</small>
+            <h4 style="margin:0; color:${textoColor};">${e.nombre}${dest?.corona ? '<span class="corona">👑</span>' : ''}</h4>
+            ${e.apodo ? `<small style="color:${subTextoColor};font-weight:600;">"${e.apodo}"</small>` : ''}
+            <small style="color:${subTextoColor};">🎓 ${e.curso || '—'}</small>
           </div>
         </div>
       </div>`;
@@ -402,10 +418,15 @@ async function verPerfilEstudiante(id) {
   let bannerLimpio = e.banner_url ? e.banner_url.split('?')[0] : null;
 
   abrirModal(`
-    ${bannerLimpio ? `<img src="${bannerLimpio}" class="banner-img" style="object-fit: cover; object-position: center; display:block !important; width:100%; height:120px;">` : ''}
-    ${dest ? `<div class="banner-destacado" style="margin-top:10px;">👑 ${dest.frase || 'Usuario destacado'}</div>` : ''}
+    ${bannerLimpio ? `
+      <div style="width: 100%; max-height: 160px; overflow: hidden; border-radius: 18px 18px 0 0; margin-bottom: 15px;">
+        <img src="${bannerLimpio}" style="width: 100%; height: 160px; object-fit: cover; object-position: center; display: block;">
+      </div>
+    ` : ''}
+    
+    ${dest ? `<div class="banner-destacado" style="margin-top:${bannerLimpio ? '0' : '10px'};">👑 ${dest.frase || 'Usuario destacado'}</div>` : ''}
 
-    <div class="modal-perfil-header" style="margin-top:${bannerLimpio ? '15px' : '0'};">
+    <div class="modal-perfil-header" style="margin-top:${bannerLimpio ? '10px' : '0'};">
       ${pfpLimpia 
         ? `<img src="${pfpLimpia}" class="pfp-img grande" style="box-shadow:0 0 20px ${e.color1}; display:block !important; width:96px; height:96px; object-fit:cover;">` 
         : `<div class="avatar avatar-grande" style="background:${grad}">${iniciales(e.nombre)}</div>`}

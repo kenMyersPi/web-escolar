@@ -2,6 +2,7 @@
 
 let ESTUDIANTE_LOGUEADO = null;
 let DESTACADOS = [];
+let MUSICA_ACTIVA = false;
 
 document.addEventListener('DOMContentLoaded', () => {
   const sesion = sessionStorage.getItem('cfar_user');
@@ -26,6 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
   cargarNotas();
   cargarEvaluaciones();
   cargarAnuncios();
+  
+  crearReproductorGlobal();
 });
 
 const vacio = (msg) => `<div class="vacio">${msg}</div>`;
@@ -51,6 +54,36 @@ function colorMateria(materia) {
   return 'default';
 }
 
+// =================== REPRODUCTOR GLOBAL ===================
+// Cambia este link por el MP3 que tú quieras que suene de fondo en toda la página
+const URL_MUSICA_FONDO = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"; 
+
+function crearReproductorGlobal() {
+  const div = document.createElement('div');
+  div.className = 'music-player';
+  div.innerHTML = `
+    <button id="btn-musica" onclick="toggleMusicaGlobal()">▶️</button>
+    <span style="font-size:0.8rem; font-weight:600; color:var(--text);">Música Lo-Fi</span>
+    <audio id="audio-global" loop>
+      <source src="${URL_MUSICA_FONDO}" type="audio/mpeg">
+    </audio>
+  `;
+  document.body.appendChild(div);
+}
+
+function toggleMusicaGlobal() {
+  const audio = document.getElementById('audio-global');
+  const btn = document.getElementById('btn-musica');
+  if (MUSICA_ACTIVA) {
+    audio.pause();
+    btn.innerHTML = '▶️';
+  } else {
+    audio.play();
+    btn.innerHTML = '⏸️';
+  }
+  MUSICA_ACTIVA = !MUSICA_ACTIVA;
+}
+
 // =================== MODAL ===================
 function abrirModal(html, claseExtra = '', fondoGradiente = '') {
   cerrarModal();
@@ -58,7 +91,7 @@ function abrirModal(html, claseExtra = '', fondoGradiente = '') {
   overlay.className = 'modal-overlay';
   overlay.id = 'modal-global';
   
-  // Si hay degradado, lo aplicamos al fondo del modal
+  // Si hay degradado personalizado, se aplica al fondo del modal
   const estiloFondo = fondoGradiente ? `style="background: ${fondoGradiente};"` : '';
 
   overlay.innerHTML = `
@@ -72,6 +105,7 @@ function abrirModal(html, claseExtra = '', fondoGradiente = '') {
   document.body.appendChild(overlay);
   document.body.style.overflow = 'hidden';
 }
+
 function cerrarModal() {
   const m = document.getElementById('modal-global');
   if (m) m.remove();
@@ -179,10 +213,10 @@ function actualizarUIUsuario() {
 function abrirLogin() {
   abrirModal(`
     <div class="modal-login">
-      <h2 style="margin-bottom:10px;color:var(--primary-dark);">Iniciar Sesión</h2>
+      <h2 style="margin-bottom:10px;color:white;">Iniciar Sesión</h2>
       <p style="margin-bottom:15px;font-size:0.9rem;color:var(--text-muted);">Usa tu nombre exacto y tu clave personal.</p>
-      <input type="text" id="login-nombre" placeholder="Tu nombre exacto">
-      <input type="password" id="login-clave" placeholder="Tu clave personal">
+      <input type="text" id="login-nombre" placeholder="Tu nombre exacto" style="background:#0f172a; color:white; border:1px solid var(--border);">
+      <input type="password" id="login-clave" placeholder="Tu clave personal" style="background:#0f172a; color:white; border:1px solid var(--border);">
       <button class="btn-agregar" style="width:100%;margin-top:10px;" onclick="hacerLogin()">Entrar</button>
     </div>
   `);
@@ -261,39 +295,39 @@ async function abrirEditarPerfil() {
 
   abrirModal(`
     <div class="form-perfil">
-      <h2 style="margin-bottom:15px;color:var(--primary-dark);">Editar Mi Perfil</h2>
+      <h2 style="margin-bottom:15px;color:white;">Editar Mi Perfil</h2>
 
-      <label>Foto de Perfil</label>
+      <label style="color:white;">Foto de Perfil</label>
       <input type="file" id="edit-pfp" accept="image/*">
 
-      <label>Banner Animado (GIF)</label>
+      <label style="color:white;">Banner Animado (GIF)</label>
       <input type="file" id="edit-banner" accept="image/*">
       
-      <label>Apodo / Nickname</label>
+      <label style="color:white;">Apodo / Nickname</label>
       <input type="text" id="edit-apodo" value="${e.apodo || ''}" style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);margin-bottom:10px;font-family:inherit;">
       
-      <label>Bio / Sobre mí</label>
+      <label style="color:white;">Bio / Sobre mí</label>
       <textarea id="edit-bio" style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);min-height:80px;margin-bottom:10px;font-family:inherit;">${e.bio || ''}</textarea>
       
-      <div style="background:#eff6ff; padding:10px; border-radius:8px; margin-bottom:10px; border:1px solid #bfdbfe;">
-        <p style="font-size:0.85rem; color:#1e40af; font-weight:600; margin-bottom:8px;">🎨 Colores de tu Perfil (Degradado)</p>
+      <div style="background:rgba(59,130,246,0.1); padding:10px; border-radius:8px; margin-bottom:10px; border:1px solid rgba(59,130,246,0.3);">
+        <p style="font-size:0.85rem; color:#93c5fd; font-weight:600; margin-bottom:8px;">🎨 Colores de tu Perfil (Degradado)</p>
         <div style="display:flex; gap:10px;">
           <div style="flex:1;">
-            <label style="font-size:0.75rem; margin:0 0 4px 0;">Color 1</label>
+            <label style="font-size:0.75rem; margin:0 0 4px 0; color:var(--text-muted);">Color 1</label>
             <input type="color" id="edit-color1" value="${e.color1 || '#1e3a8a'}" style="width:100%; cursor:pointer;">
           </div>
           <div style="flex:1;">
-            <label style="font-size:0.75rem; margin:0 0 4px 0;">Color 2</label>
+            <label style="font-size:0.75rem; margin:0 0 4px 0; color:var(--text-muted);">Color 2</label>
             <input type="color" id="edit-color2" value="${e.color2 || '#3b82f6'}" style="width:100%; cursor:pointer;">
           </div>
         </div>
       </div>
       
-      <label>Nueva Clave (dejar vacío si no quieres cambiarla)</label>
+      <label style="color:white;">Nueva Clave (dejar vacío si no quieres cambiarla)</label>
       <input type="password" id="edit-clave" placeholder="Nueva contraseña" style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);margin-bottom:15px;font-family:inherit;">
 
       <button class="btn-agregar" style="width:100%;" onclick="guardarPerfil()">Guardar Cambios</button>
-      <button class="btn-salir" style="width:100%;margin-top:10px;background:#dc2626;" onclick="cerrarSesionEstudiante()">Cerrar Sesión</button>
+      <button class="btn-salir" style="width:100%;margin-top:10px;background:#dc2626; border:none;" onclick="cerrarSesionEstudiante()">Cerrar Sesión</button>
     </div>
   `);
 }
@@ -406,32 +440,35 @@ async function verPerfilEstudiante(id) {
   if (!e) return;
 
   const dest = esDestacado(e.nombre);
-  
-  // Creamos el degradado
   const grad = `linear-gradient(135deg, ${e.color1 || '#1e3a8a'}, ${e.color2 || '#3b82f6'})`;
 
   const { data: notas } = await db.from('cfar_notas').select('materia, nota, privada').eq('estudiante_id', id);
   const lista = notas || [];
   const promedio = lista.length ? (lista.reduce((s, n) => s + Number(n.nota), 0) / lista.length).toFixed(2) : null;
 
-  const { data: muro } = await db.from('cfar_muro').select('*').eq('estudiante_id', id).order('id', { ascending: false });
+  // Traemos el muro ordenado por likes
+  const { data: muro } = await db.from('cfar_muro').select('*').eq('estudiante_id', id).order('likes', { ascending: false });
 
   const notasHTML = lista.map(n => `<li><span>${n.materia}</span> <strong>${n.nota}</strong></li>`).join('');
+  
   const muroHTML = (muro || []).map(m => `
     <li class="muro-item">
-      <strong>${m.autor_nombre}</strong>
-      ${m.mensaje}
+      <div>
+        <strong>${m.autor_nombre}</strong>
+        ${m.mensaje}
+      </div>
+      <button class="btn-like" onclick="darLike(${m.id}, ${e.id})">
+        ❤️ <span>${m.likes || 0}</span>
+      </button>
     </li>
   `).join('');
 
   let pfpLimpia = e.pfp_url ? e.pfp_url.split('?')[0] : null;
   let bannerLimpio = e.banner_url ? e.banner_url.split('?')[0] : null;
-
   const margenHeader = bannerLimpio ? 'margin-top: -30px;' : 'margin-top: 15px;';
 
   abrirModal(`
     ${bannerLimpio ? `<img src="${bannerLimpio}" class="banner-img">` : ''}
-    
     ${dest ? `<div class="banner-destacado" style="margin-top:${bannerLimpio ? '-10px' : '10px'}; position:relative; z-index:3;">👑 ${dest.frase || 'Usuario destacado'}</div>` : ''}
 
     <div class="modal-perfil-header" style="${margenHeader}">
@@ -455,27 +492,39 @@ async function verPerfilEstudiante(id) {
     ` : ''}
 
     <div style="display:flex;gap:10px;flex-wrap:wrap;">
-      <div class="bio" style="flex:1; background: rgba(0,0,0,0.3); color: white; border-left-color: rgba(255,255,255,0.5);">${e.bio || 'Este estudiante no ha escrito su biografía.'}</div>
+      <div class="bio" style="flex:1;">${e.bio || 'Este estudiante no ha escrito su biografía.'}</div>
     </div>
 
     ${promedio ? `
-      <h3 style="color:white;">📊 Promedio general</h3>
-      <div class="promedio-big" style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px);">
+      <h3>📊 Promedio general</h3>
+      <div class="promedio-big">
         <div class="num">${promedio}</div>
         <div class="label">${lista.length} materias</div>
       </div>
     ` : ''}
 
-    <h3 style="color:white;">💬 Muro (Sugerencias / Mensajes)</h3>
+    <h3>💬 Muro (Sugerencias / Mensajes)</h3>
     <div style="display:flex;gap:8px;margin-bottom:10px;">
-      <input type="text" id="muro-nombre" placeholder="Tu nombre" style="width:30%;padding:8px;border-radius:6px;border:none;background:rgba(255,255,255,0.9);">
-      <input type="text" id="muro-msg" placeholder="Escribe un mensaje..." style="flex:1;padding:8px;border-radius:6px;border:none;background:rgba(255,255,255,0.9);">
+      <input type="text" id="muro-nombre" placeholder="Tu nombre" style="width:30%;padding:8px;border-radius:6px;border:none;background:rgba(255,255,255,0.9); color: #0f172a;">
+      <input type="text" id="muro-msg" placeholder="Escribe un mensaje..." style="flex:1;padding:8px;border-radius:6px;border:none;background:rgba(255,255,255,0.9); color: #0f172a;">
       <button class="btn-agregar" style="margin:0; background:rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.3);" onclick="enviarMuro(${e.id})">Enviar</button>
     </div>
     <ul class="muro-lista">
       ${muroHTML ? muroHTML : '<p style="font-size:0.8rem;color:rgba(255,255,255,0.6);">Sin mensajes aún.</p>'}
     </ul>
   `, dest ? 'modal-galaxia' : '', grad);
+}
+
+// =================== LIKES ===================
+async function darLike(muroId, estudianteId) {
+  const { data: m } = await db.from('cfar_muro').select('likes').eq('id', muroId).single();
+  if (!m) return;
+
+  const nuevosLikes = (m.likes || 0) + 1;
+  await db.from('cfar_muro').update({ likes: nuevosLikes }).eq('id', muroId);
+  
+  // Recargamos el perfil para ver el cambio
+  verPerfilEstudiante(estudianteId);
 }
 
 async function enviarMuro(estudianteId) {
@@ -501,7 +550,7 @@ async function cargarProfesores() {
         <div class="avatar">${iniciales(p.nombre)}</div>
         <div>
           <h4 style="margin:0;">${p.nombre}</h4>
-          ${p.apodo ? `<small style="color:var(--primary);font-weight:600;">"${p.apodo}"</small>` : ''}
+          ${p.apodo ? `<small style="color:var(--primary-light);font-weight:600;">"${p.apodo}"</small>` : ''}
           <small>📚 ${p.materia || '—'}</small>
         </div>
       </div>
@@ -523,7 +572,7 @@ async function verPerfilProfesor(id) {
     : null;
 
   abrirModal(`
-    <div class="modal-perfil-header">
+    <div class="modal-perfil-header" style="align-items: center;">
       <div class="avatar avatar-grande">${iniciales(p.nombre)}</div>
       <div>
         <h2>${p.nombre}</h2>
@@ -613,10 +662,10 @@ async function verEvaluacion(id) {
 
   abrirModal(`
     <div style="padding: 6px 0 0;">
-      <span style="display:inline-block;padding:4px 12px;background:${ev.tipo === 'Examen' ? '#fee2e2' : '#dbeafe'};color:${ev.tipo === 'Examen' ? '#b91c1c' : '#1e40af'};border-radius:999px;font-size:0.75rem;font-weight:600;margin-bottom:10px;">
+      <span style="display:inline-block;padding:4px 12px;background:${ev.tipo === 'Examen' ? 'rgba(220,38,38,0.2)' : 'rgba(59,130,246,0.2)'};color:${ev.tipo === 'Examen' ? '#fca5a5' : '#93c5fd'};border-radius:999px;font-size:0.75rem;font-weight:600;margin-bottom:10px; border: 1px solid ${ev.tipo === 'Examen' ? 'rgba(220,38,38,0.3)' : 'rgba(59,130,246,0.3)'};">
         ${ev.tipo}
       </span>
-      <h2 style="color:var(--primary-dark);font-size:1.35rem;font-weight:700;margin-bottom:8px;">${ev.titulo}</h2>
+      <h2 style="color:white;font-size:1.35rem;font-weight:700;margin-bottom:8px;">${ev.titulo}</h2>
       <p style="color:var(--text-muted);font-size:0.88rem;margin-bottom:20px;">
         📚 ${ev.materia || '—'} · 📅 ${ev.fecha || 'Sin fecha'}
       </p>

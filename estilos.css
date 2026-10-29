@@ -8,13 +8,13 @@
   --primary-light: #3b82f6;
   --primary-dark: #1e3a8a;
   --accent: #06b6d4;
-  --bg: #f5f7fb;
-  --card: #ffffff;
-  --text: #0f172a;
-  --text-muted: #64748b;
-  --border: #e2e8f0;
-  --shadow: 0 1px 3px rgba(15,23,42,0.06), 0 4px 12px rgba(15,23,42,0.04);
-  --shadow-hover: 0 8px 24px rgba(15,23,42,0.12), 0 16px 40px rgba(15,23,42,0.08);
+  --bg: #0f172a; /* FONDO OSCURO GLOBAL */
+  --card: #1e293b;
+  --text: #f1f5f9;
+  --text-muted: #94a3b8;
+  --border: #334155;
+  --shadow: 0 1px 3px rgba(0,0,0,0.3), 0 4px 12px rgba(0,0,0,0.2);
+  --shadow-hover: 0 4px 12px rgba(0,0,0,0.4), 0 12px 32px rgba(0,0,0,0.3);
   --radius: 14px;
 }
 
@@ -23,6 +23,10 @@ html { scroll-behavior: smooth; }
 body {
   font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background: var(--bg);
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(30, 64, 175, 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.1) 0px, transparent 50%);
+  background-attachment: fixed;
   color: var(--text);
   line-height: 1.6;
   min-height: 100vh;
@@ -93,7 +97,6 @@ body {
   font-size: 0.75rem;
   font-weight: 500;
   backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
 }
 
 .btn-user {
@@ -118,9 +121,8 @@ body {
   justify-content: center;
   gap: 8px;
   padding: 16px 14px;
-  background: rgba(255,255,255,0.9);
+  background: rgba(15,23,42,0.85);
   backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
@@ -142,10 +144,9 @@ body {
 }
 
 .nav button:hover, .tabs button:hover {
-  background: rgba(59,130,246,0.08);
-  color: var(--primary);
-  border-color: rgba(59,130,246,0.2);
-  transform: translateY(-1px);
+  background: rgba(59,130,246,0.15);
+  color: var(--primary-light);
+  border-color: rgba(59,130,246,0.3);
 }
 
 .nav button.activo, .tabs button.activo {
@@ -155,7 +156,7 @@ body {
   box-shadow: 0 4px 14px rgba(30,64,175,0.35);
 }
 
-/* =================== SECCIONES =================== */
+/* =================== SECCIONES / CARDS =================== */
 .seccion {
   display: none;
   padding: 36px 20px 60px;
@@ -175,7 +176,7 @@ body {
 
 .seccion h2 {
   margin-bottom: 24px;
-  color: var(--primary-dark);
+  color: var(--text);
   font-size: clamp(1.15rem, 3.5vw, 1.6rem);
   font-weight: 700;
   letter-spacing: -0.015em;
@@ -198,7 +199,6 @@ body {
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
 }
 
-/* =================== CARDS =================== */
 .card {
   background: var(--card);
   padding: 22px;
@@ -223,7 +223,7 @@ body {
 }
 
 .card h4 {
-  color: var(--primary-dark);
+  color: white;
   margin-bottom: 8px;
   font-size: 1.02rem;
   font-weight: 600;
@@ -240,7 +240,7 @@ body {
 .card p {
   margin-top: 10px;
   font-size: 0.92rem;
-  color: #334155;
+  color: #cbd5e1;
 }
 
 .card .privada {
@@ -249,7 +249,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: #fef2f2;
+  background: rgba(254,242,242,0.1);
   padding: 4px 10px;
   border-radius: 6px;
   font-size: 0.85rem;
@@ -264,14 +264,15 @@ body {
   font-size: 0.9rem;
   font-family: inherit;
   transition: border-color 0.2s, box-shadow 0.2s;
-  background: #fafbfc;
+  background: #0f172a;
+  color: white;
 }
 
 .card input[type="password"]:focus {
   outline: none;
   border-color: var(--primary-light);
   box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
-  background: white;
+  background: #1e293b;
 }
 
 .card-click {
@@ -280,13 +281,13 @@ body {
 
 /* =================== AVISOS / VACIOS / LOADERS =================== */
 .aviso {
-  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  background: linear-gradient(135deg, rgba(254,243,199,0.1), rgba(253,230,138,0.1));
   padding: 12px 18px;
   border-radius: 10px;
   margin-bottom: 20px;
   border-left: 4px solid #f59e0b;
   font-size: 0.88rem;
-  color: #78350f;
+  color: #fcd34d;
   font-weight: 500;
 }
 
@@ -295,7 +296,7 @@ body {
   text-align: center;
   padding: 55px 20px;
   color: var(--text-muted);
-  background: white;
+  background: var(--card);
   border-radius: var(--radius);
   border: 2px dashed var(--border);
   font-size: 0.92rem;
@@ -345,19 +346,19 @@ body {
 
 /* =================== HORARIO =================== */
 .horario-header {
-  background: white;
+  background: var(--card);
   padding: 16px 20px;
   border-radius: 12px 12px 0 0;
   border: 1px solid var(--border);
   border-bottom: none;
   font-size: 0.95rem;
-  color: var(--primary-dark);
+  color: var(--text);
   text-align: center;
 }
 
 .horario-wrapper {
   overflow-x: auto;
-  background: white;
+  background: var(--card);
   border-radius: 0 0 12px 12px;
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
@@ -397,13 +398,13 @@ body {
 }
 
 .horario-tabla tbody tr:hover td:not(.celda-hora) {
-  background: rgba(59,130,246,0.05);
+  background: rgba(59,130,246,0.1);
 }
 
 .horario-tabla .celda-hora {
-  background: #f1f5f9;
+  background: #0f172a;
   font-weight: 600;
-  color: var(--primary-dark);
+  color: var(--text-muted);
   font-size: 0.78rem;
   white-space: nowrap;
 }
@@ -420,7 +421,7 @@ body {
 
 .horario-tabla .materia-nombre {
   font-weight: 600;
-  color: var(--primary-dark);
+  color: white;
   font-size: 0.85rem;
 }
 
@@ -436,8 +437,8 @@ body {
 }
 
 .horario-tabla .celda-receso {
-  background: linear-gradient(135deg, #fef3c7, #fde68a);
-  color: #78350f;
+  background: linear-gradient(135deg, rgba(254,243,199,0.15), rgba(253,230,138,0.15));
+  color: #fcd34d;
   font-weight: 700;
   letter-spacing: 0.05em;
   font-size: 0.8rem;
@@ -445,21 +446,21 @@ body {
 }
 
 /* Colores por materia */
-.materia-matematica   { --mat-color: #3b82f6; --mat-bg: #eff6ff; }
-.materia-castellano   { --mat-color: #dc2626; --mat-bg: #fef2f2; }
-.materia-biologia     { --mat-color: #16a34a; --mat-bg: #f0fdf4; }
-.materia-quimica      { --mat-color: #7c3aed; --mat-bg: #f5f3ff; }
-.materia-fisica       { --mat-color: #ea580c; --mat-bg: #fff7ed; }
-.materia-ingles       { --mat-color: #0891b2; --mat-bg: #ecfeff; }
-.materia-ghc          { --mat-color: #a16207; --mat-bg: #fefce8; }
-.materia-edfisica     { --mat-color: #e11d48; --mat-bg: #fff1f2; }
-.materia-orientacion  { --mat-color: #0d9488; --mat-bg: #f0fdfa; }
-.materia-grupo        { --mat-color: #475569; --mat-bg: #f8fafc; }
-.materia-default      { --mat-color: #64748b; --mat-bg: #f8fafc; }
+.materia-matematica   { --mat-color: #3b82f6; --mat-bg: rgba(59,130,246,0.1); }
+.materia-castellano   { --mat-color: #dc2626; --mat-bg: rgba(220,38,38,0.1); }
+.materia-biologia     { --mat-color: #16a34a; --mat-bg: rgba(22,163,74,0.1); }
+.materia-quimica      { --mat-color: #7c3aed; --mat-bg: rgba(124,58,237,0.1); }
+.materia-fisica       { --mat-color: #ea580c; --mat-bg: rgba(234,88,12,0.1); }
+.materia-ingles       { --mat-color: #0891b2; --mat-bg: rgba(8,145,178,0.1); }
+.materia-ghc          { --mat-color: #d97706; --mat-bg: rgba(217,119,6,0.1); }
+.materia-edfisica     { --mat-color: #e11d48; --mat-bg: rgba(225,29,72,0.1); }
+.materia-orientacion  { --mat-color: #0d9488; --mat-bg: rgba(13,148,136,0.1); }
+.materia-grupo        { --mat-color: #64748b; --mat-bg: rgba(100,116,139,0.1); }
+.materia-default      { --mat-color: #64748b; --mat-bg: rgba(100,116,139,0.1); }
 
 .nota-card {
   border-left: 5px solid var(--mat-color, #3b82f6);
-  background: var(--mat-bg, white);
+  background: var(--mat-bg, var(--card));
 }
 
 .nota-card .materia-tag {
@@ -516,7 +517,7 @@ body {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15,23,42,0.6);
+  background: rgba(0,0,0,0.7);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   z-index: 999;
@@ -528,13 +529,13 @@ body {
 }
 
 .modal {
-  background: white;
+  background: var(--card);
   border-radius: 18px;
   max-width: 720px;
   width: 100%;
   max-height: 90vh;
-  overflow-y: auto; /* SCROLL ARREGLADO */
-  box-shadow: 0 25px 60px rgba(0,0,0,0.35);
+  overflow-y: auto;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.5);
   animation: slideUp 0.3s ease;
   position: relative;
 }
@@ -543,7 +544,7 @@ body {
   position: absolute;
   top: 14px;
   right: 14px;
-  background: rgba(0,0,0,0.4);
+  background: rgba(0,0,0,0.5);
   border: none;
   width: 36px;
   height: 36px;
@@ -569,7 +570,6 @@ body {
   max-height: calc(90vh - 60px);
 }
 
-/* DISEÑO DISCORD NITRO DEL MODAL */
 .banner-img {
   width: calc(100% + 60px);
   height: 140px;
@@ -582,10 +582,10 @@ body {
 
 .modal-perfil-header {
   display: flex;
-  align-items: flex-end; /* Foto se monta sobre el banner */
+  align-items: flex-end;
   gap: 20px;
   padding-bottom: 20px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
   margin-bottom: 20px;
   position: relative;
   z-index: 2;
@@ -593,55 +593,58 @@ body {
 
 .modal-perfil-header .avatar-grande,
 .modal-perfil-header .pfp-img.grande {
-  margin-top: -50px; /* Sube la foto */
-  border: 4px solid white; /* Borde estilo Discord */
+  margin-top: -50px;
+  border: 4px solid white;
   background: white;
 }
 
 .modal-perfil-header h2 {
-  color: var(--primary-dark);
+  color: white;
   font-size: 1.35rem;
   font-weight: 700;
   margin-bottom: 3px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
 .modal-perfil-header .apodo {
-  color: var(--primary);
+  color: rgba(255,255,255,0.9);
   font-weight: 600;
   font-size: 0.9rem;
   margin-bottom: 3px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
 }
 
 .modal-perfil-header .curso {
-  color: var(--text-muted);
+  color: rgba(255,255,255,0.8);
   font-size: 0.85rem;
 }
 
 .modal-body h3 {
-  color: var(--primary-dark);
+  color: white;
   font-size: 1.05rem;
   font-weight: 600;
   margin: 22px 0 12px;
   display: flex;
   align-items: center;
   gap: 8px;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
 }
 
 .modal-body .bio {
-  background: #f8fafc;
+  background: rgba(0,0,0,0.3);
   padding: 14px 18px;
   border-radius: 12px;
   font-size: 0.92rem;
-  color: #334155;
-  border-left: 4px solid var(--primary);
+  color: white;
+  border-left: 4px solid rgba(255,255,255,0.5);
 }
 
 .contenido-largo {
   font-size: 0.93rem;
   line-height: 1.75;
-  color: #334155;
+  color: #cbd5e1;
   white-space: pre-wrap;
-  background: #f8fafc;
+  background: #0f172a;
   padding: 18px 20px;
   border-radius: 12px;
   border-left: 4px solid var(--accent);
@@ -651,7 +654,9 @@ body {
 .promedio-big {
   text-align: center;
   padding: 22px;
-  background: linear-gradient(135deg, var(--primary-dark), var(--primary), var(--accent));
+  background: rgba(0,0,0,0.4); 
+  border: 1px solid rgba(255,255,255,0.2); 
+  backdrop-filter: blur(5px);
   border-radius: 14px;
   color: white;
   margin: 16px 0;
@@ -672,18 +677,29 @@ body {
   margin-top: 6px;
 }
 
-/* MURO */
+/* MURO Y LIKES */
 .muro-lista {
   list-style: none; margin-top: 15px;
-  max-height: 200px; overflow-y: auto;
   display: flex; flex-direction: column; gap: 8px;
 }
+
 .muro-item {
-  background: #f1f5f9;
+  background: rgba(0,0,0,0.4);
   padding: 10px 14px; border-radius: 10px;
-  font-size: 0.85rem;
+  font-size: 0.85rem; color: white; 
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;
+  border: 1px solid rgba(255,255,255,0.1);
 }
-.muro-item strong { color: var(--primary); display: block; margin-bottom: 2px; }
+
+.muro-item strong { color: #93c5fd; display: block; margin-bottom: 2px; }
+
+.btn-like { 
+  background: transparent; border: none; color: #f43f5e; 
+  font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; gap: 4px; 
+  transition: transform 0.2s;
+}
+.btn-like:hover { transform: scale(1.1); }
+.btn-like span { font-size: 0.8rem; color: #cbd5e1; font-weight: bold; }
 
 /* LINKS PERFIL */
 .links-perfil {
@@ -698,25 +714,22 @@ body {
   align-items: center;
   gap: 6px;
   padding: 8px 14px;
-  background: #f1f5f9;
-  color: var(--primary-dark);
+  background: rgba(0,0,0,0.3);
+  color: white;
   text-decoration: none;
   border-radius: 10px;
   font-size: 0.85rem;
   font-weight: 600;
   transition: all 0.2s;
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255,255,255,0.2);
 }
 
 .link-perfil:hover {
   background: var(--primary);
   color: white;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(30,64,175,0.3);
+  border-color: var(--primary);
 }
-
-.link-perfil.discord:hover { background: #5865F2; border-color: #5865F2; }
-.link-perfil.github:hover  { background: #24292e; border-color: #24292e; }
 
 /* =================== PERFIL DESTACADO - GALAXIA =================== */
 .card.destacado {
@@ -853,24 +866,38 @@ body {
 
 .badge {
   display: inline-flex; align-items: center; gap: 4px;
-  background: rgba(59,130,246,0.2);
-  color: #bfdbfe;
+  background: rgba(0,0,0,0.4); 
+  border: 1px solid rgba(255,255,255,0.3); 
+  color: white;
   padding: 4px 8px; border-radius: 6px;
   font-size: 0.7rem; font-weight: 700;
-  border: 1px solid rgba(59,130,246,0.3);
   margin-right: 4px; margin-top: 6px;
 }
 
-/* =================== FORMULARIOS ADMIN =================== */
-.admin-body { background: #eef2f9; min-height: 100vh; }
+/* REPRODUCTOR DE MÚSICA FLOTANTE */
+.music-player {
+  position: fixed; bottom: 20px; right: 20px;
+  background: var(--card); padding: 10px 15px;
+  border-radius: 999px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  display: flex; align-items: center; gap: 10px; z-index: 1000;
+  border: 1px solid var(--border);
+}
+.music-player button {
+  background: var(--primary); border: none; width: 35px; height: 35px;
+  border-radius: 50%; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+
+/* =================== FORMULARIOS Y ADMIN =================== */
+.admin-body { background: var(--bg); min-height: 100vh; }
 
 .login-box {
   max-width: 400px;
   margin: 90px auto;
   padding: 40px 32px;
-  background: white;
+  background: var(--card);
   border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(15,23,42,0.18);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  border: 1px solid var(--border);
   text-align: center;
   animation: fadeIn 0.5s ease;
 }
@@ -878,7 +905,7 @@ body {
 .login-icon { font-size: 2.4rem; margin-bottom: 8px; }
 
 .login-box h2 {
-  color: var(--primary-dark);
+  color: white;
   margin-bottom: 6px;
   font-size: 1.35rem;
   font-weight: 700;
@@ -899,14 +926,15 @@ body {
   font-size: 0.92rem;
   font-family: inherit;
   transition: border-color 0.2s, box-shadow 0.2s;
-  background: #fafbfc;
+  background: #0f172a;
+  color: white;
 }
 
 .login-box input:focus {
   outline: none;
   border-color: var(--primary-light);
   box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
-  background: white;
+  background: #1e293b;
 }
 
 .login-box button {
@@ -953,7 +981,7 @@ body {
 }
 
 .form-card {
-  background: white;
+  background: var(--card);
   padding: 26px;
   border-radius: 16px;
   box-shadow: var(--shadow);
@@ -962,7 +990,7 @@ body {
 }
 
 .form-card h3 {
-  color: var(--primary-dark);
+  color: white;
   margin-bottom: 16px;
   font-size: 1.05rem;
   font-weight: 600;
@@ -983,14 +1011,15 @@ body {
   font-size: 0.92rem;
   font-family: inherit;
   transition: border-color 0.2s, box-shadow 0.2s;
-  background: #fafbfc;
+  background: #0f172a;
+  color: white;
 }
 
 .form-card input:focus, .form-card textarea:focus, .form-card select:focus {
   outline: none;
   border-color: var(--primary-light);
   box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
-  background: white;
+  background: #1e293b;
 }
 
 .form-card textarea { min-height: 80px; resize: vertical; }
@@ -1035,7 +1064,7 @@ body {
 .lista-admin { list-style: none; margin-top: 8px; }
 
 .lista-admin li {
-  background: white;
+  background: var(--card);
   padding: 14px 18px;
   margin-bottom: 10px;
   border-radius: 12px;
@@ -1057,8 +1086,8 @@ body {
 }
 
 .lista-admin li button {
-  background: #fee2e2;
-  color: #b91c1c;
+  background: rgba(220,38,38,0.2);
+  color: #fca5a5;
   border: none;
   padding: 7px 14px;
   font-size: 0.8rem;
@@ -1103,8 +1132,8 @@ body {
 }
 
 .btn-editar {
-  background: #dbeafe !important;
-  color: #1e40af !important;
+  background: rgba(59,130,246,0.2) !important;
+  color: #93c5fd !important;
 }
 
 .btn-editar:hover {
@@ -1117,21 +1146,22 @@ body {
   gap: 12px;
   flex-wrap: wrap;
   padding: 12px 16px;
-  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  background: rgba(59,130,246,0.1);
   border-radius: 12px;
   margin-bottom: 16px;
   font-size: 0.85rem;
-  color: var(--primary-dark);
+  color: var(--text);
   font-weight: 600;
+  border: 1px solid rgba(59,130,246,0.2);
 }
 
 .contador-admin span {
-  background: white;
+  background: #0f172a;
   padding: 4px 12px;
   border-radius: 999px;
 }
 
-/* =================== RESPONSIVE (MÓVIL) =================== */
+/* =================== RESPONSIVE (MÓVIL ARREGLADO) =================== */
 @media (max-width: 640px) {
   .header { padding: 32px 16px 42px; }
   .nav, .tabs {
@@ -1144,8 +1174,27 @@ body {
   }
   .nav::-webkit-scrollbar, .tabs::-webkit-scrollbar { display: none; }
   .nav button, .tabs button { padding: 8px 14px; font-size: 0.8rem; }
+  
   .seccion { padding: 24px 14px 50px; }
   .grid { grid-template-columns: 1fr; gap: 14px; }
+  
+  /* Arreglo de la tarjeta en móvil */
+  .card { padding: 14px; border-radius: 12px; }
+  .card h4 { font-size: 1rem; }
+  
+  /* Arreglo del Muro */
+  .muro-lista { max-height: none; }
+  .muro-item { flex-direction: column; gap: 8px; }
+  .btn-like { align-self: flex-end; }
+
+  /* Arreglo del Modal */
+  .modal-perfil-header { flex-direction: column; text-align: center; align-items: center; }
+  .modal-perfil-header .avatar-grande, .modal-perfil-header .pfp-img.grande { margin-top: -60px; }
+  
+  .modal-body { padding: 20px 15px; }
+  .banner-img { width: calc(100% + 30px); margin: -20px -15px 0 -15px; }
+  
+  /* Horario, Login y Admin */
   .horario-tabla { font-size: 0.78rem; min-width: 580px; }
   .horario-tabla thead th { padding: 11px 8px; font-size: 0.78rem; }
   .horario-tabla tbody td { padding: 11px 8px; }
@@ -1154,63 +1203,10 @@ body {
   .login-box { margin: 40px 16px; padding: 32px 22px; }
   .tab { padding: 20px 14px 50px; }
   .form-card { padding: 20px; }
-  .modal-body { padding: 22px 18px; }
-  .modal-perfil-header { flex-direction: column; text-align: center; align-items: center; }
-  .modal-perfil-header .avatar-grande, .modal-perfil-header .pfp-img.grande { margin-top: -60px; }
+  
   .promedio-big .num { font-size: 2.1rem; }
   .avatar { width: 54px; height: 54px; font-size: 1.3rem; }
   .avatar-grande { width: 82px; height: 82px; font-size: 2rem; }
   .pfp-img { width: 54px; height: 54px; }
   .pfp-img.grande { width: 82px; height: 82px; }
-}
-
-/* =================== MODO OSCURO =================== */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0f172a;
-    --card: #1e293b;
-    --text: #f1f5f9;
-    --text-muted: #94a3b8;
-    --border: #334155;
-    --shadow: 0 1px 3px rgba(0,0,0,0.3), 0 4px 12px rgba(0,0,0,0.2);
-    --shadow-hover: 0 4px 12px rgba(0,0,0,0.4), 0 12px 32px rgba(0,0,0,0.3);
-  }
-  .header { background: linear-gradient(135deg, #0c1e4a 0%, #1e40af 55%, #0891b2 130%); }
-  .nav, .tabs { background: rgba(15,23,42,0.9); }
-  .nav button:hover, .tabs button:hover { background: rgba(59,130,246,0.15); }
-  .card p { color: #cbd5e1; }
-  .card input[type="password"], .login-box input, .form-card input, .form-card textarea, .form-card select { background: #0f172a; color: white; }
-  .vacio { background: #1e293b; }
-  .admin-body { background: #0f172a; }
-  .form-card, .login-box { background: #1e293b; }
-  .lista-admin li { background: #1e293b; }
-  .horario-header { background: #1e293b; }
-  .horario-wrapper { background: #1e293b; }
-  .horario-tabla tbody td { border-color: #334155; }
-  .horario-tabla .celda-hora { background: #0f172a; color: #cbd5e1; }
-  .horario-tabla .celda-receso { background: linear-gradient(135deg, #78350f, #92400e); color: #fef3c7; }
-  .modal { background: #1e293b; }
-  .modal-body p, .modal-body .bio, .contenido-largo { color: #cbd5e1; }
-  .modal-body .bio, .contenido-largo { background: #0f172a; }
-  .muro-item { background: #0f172a; color: #cbd5e1; }
-  .contador-admin { background: linear-gradient(135deg, #1e293b, #1e40af); color: #e0e7ff; }
-  .contador-admin span { background: #0f172a; color: #cbd5e1; }
-}
-/* Ajustes para el modal con degradado */
-.modal .modal-body h3 {
-  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
-}
-
-.modal .muro-item {
-  background: rgba(0,0,0,0.4);
-  color: #f1f5f9;
-  border: 1px solid rgba(255,255,255,0.1);
-}
-
-.modal .muro-item strong {
-  color: #93c5fd;
-}
-
-.modal .modal-cerrar {
-  background: rgba(0,0,0,0.6);
 }
